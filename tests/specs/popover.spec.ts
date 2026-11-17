@@ -920,29 +920,44 @@ test.describe("animation", () => {
         content:
           '[data-slot="popover-content"], .popup { transition-duration: 3s !important }',
       })
+      await page.evaluate(() => {
+        const log: string[] = []
+        ;(window as any).__diag = log
+        const t0 = performance.now()
+        const at = () => Math.round(performance.now() - t0)
+        const proto = HTMLElement.prototype as any
+        for (const name of ["showPopover", "hidePopover"]) {
+          const original = proto[name]
+          proto[name] = function (this: HTMLElement, ...args: unknown[]) {
+            log.push(`${at()} ${name} ${this.id || this.className} ${new Error().stack?.split("\n").slice(1, 6).join(" <- ")}`)
+            return original.apply(this, args)
+          }
+        }
+        new MutationObserver((records) => {
+          for (const r of records) {
+            const el = r.target as HTMLElement
+            if (r.type === "childList") {
+              for (const n of [...r.addedNodes, ...r.removedNodes]) {
+                if (n instanceof HTMLElement && (n.matches(".popup, [data-slot]") || n.querySelector(".popup"))) {
+                  log.push(`${at()} ${r.addedNodes.length ? "added" : "removed"} ${n.tagName}.${n.className}`)
+                }
+              }
+            } else if (el.matches?.(".popup, [data-slot=popover-content]")) {
+              const now = el.getAttribute(r.attributeName!)
+              log.push(`${at()} attr ${r.attributeName} ${r.oldValue?.slice(0, 160)} => ${now?.slice(0, 160)}`)
+            }
+          }
+        }).observe(document, { subtree: true, childList: true, attributes: true, attributeOldValue: true })
+        document.addEventListener("toggle", (e) => log.push(`${at()} toggle ${(e as any).newState}`), true)
+        document.addEventListener("transitionend", (e) => log.push(`${at()} transitionend ${(e as TransitionEvent).propertyName}`), true)
+        document.addEventListener("transitionstart", (e) => log.push(`${at()} transitionstart ${(e as TransitionEvent).propertyName}`), true)
+        document.addEventListener("transitioncancel", (e) => log.push(`${at()} transitioncancel ${(e as TransitionEvent).propertyName}`), true)
+      })
       await trigger(page).click()
       await expect(dialog(page)).toBeVisible()
-      const samples: unknown[] = []
-      for (let i = 0; i < 9; i++) {
-        samples.push(
-          await dialog(page).evaluate((el) => ({
-            t: Math.round(performance.now()),
-            attrs: [...el.attributes].map((a) => `${a.name}=${a.value}`).join(" | "),
-            anims: el.getAnimations().map((a) => ({
-              type: a.constructor.name,
-              prop: (a as CSSTransition).transitionProperty,
-              state: a.playState,
-              time: a.currentTime,
-              start: a.startTime,
-            })),
-            opacity: getComputedStyle(el).opacity,
-            transform: getComputedStyle(el).transform,
-          }))
-        )
-        await page.waitForTimeout(500)
-      }
-      if (samples.some((s) => (s as { anims: unknown[] }).anims.length) ) {
-        throw new Error("DIAG " + JSON.stringify(samples))
+      await page.waitForTimeout(4500)
+      if (test.info().project.name.includes("webkit")) {
+        throw new Error("DIAG2 " + JSON.stringify(await page.evaluate(() => (window as any).__diag)))
       }
       await transitionedIn(dialog(page))
       // A button underneath the popup.
