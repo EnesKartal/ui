@@ -922,6 +922,28 @@ test.describe("animation", () => {
       })
       await trigger(page).click()
       await expect(dialog(page)).toBeVisible()
+      const samples: unknown[] = []
+      for (let i = 0; i < 9; i++) {
+        samples.push(
+          await dialog(page).evaluate((el) => ({
+            t: Math.round(performance.now()),
+            attrs: [...el.attributes].map((a) => `${a.name}=${a.value}`).join(" | "),
+            anims: el.getAnimations().map((a) => ({
+              type: a.constructor.name,
+              prop: (a as CSSTransition).transitionProperty,
+              state: a.playState,
+              time: a.currentTime,
+              start: a.startTime,
+            })),
+            opacity: getComputedStyle(el).opacity,
+            transform: getComputedStyle(el).transform,
+          }))
+        )
+        await page.waitForTimeout(500)
+      }
+      if (samples.some((s) => (s as { anims: unknown[] }).anims.length) ) {
+        throw new Error("DIAG " + JSON.stringify(samples))
+      }
       await transitionedIn(dialog(page))
       // A button underneath the popup.
       const point = await dialog(page).evaluate((el) => {
