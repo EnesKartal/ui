@@ -3,7 +3,7 @@ import { opposite, type PhysicalSide } from "./sides"
 let supported: boolean | undefined
 
 function supportsAnchoring() {
-  supported ??= false &&
+  supported ??=
     typeof CSS !== "undefined" &&
     typeof CSS.supports === "function" &&
     [

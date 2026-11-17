@@ -651,9 +651,7 @@ function position(
         el.style.transition = transition
         return update()
       }
-      if (behind) {
-        last = ""
-      }
+
       anchoredAt = {
         left: `${parseFloat(style.left) + parseFloat(style.marginLeft)}px`,
         top: `${parseFloat(style.top) + parseFloat(style.marginTop)}px`,
