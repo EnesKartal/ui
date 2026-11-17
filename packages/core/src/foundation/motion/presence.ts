@@ -167,24 +167,13 @@ function animateOut(el: HTMLElement, done: () => void) {
   pendingResets.get(el)?.()
   el.removeAttribute("data-starting-style")
   el.setAttribute("data-ending-style", "")
-  const wasInert = el.hasAttribute("inert")
-  el.setAttribute("inert", "")
-  // An owner that writes `inert` during the exit, like `inert={!open}` on a panel
-  // kept mounted, keeps what it wrote.
-  const Observer = el.ownerDocument?.defaultView?.MutationObserver
-  let written = false
-  const owner = Observer && new Observer(() => (written = true))
-  owner?.observe(el, { attributeFilter: ["inert"] })
+  el.inert = true
   let frame = 0
   const reset = () => {
     cancelAnimationFrame(frame)
     pendingResets.delete(el)
     el.removeAttribute("data-ending-style")
-    written ||= !!owner?.takeRecords().length
-    owner?.disconnect()
-    if (!written) {
-      el.toggleAttribute("inert", wasInert)
-    }
+    el.inert = false
   }
   let isAnimating = false
   // Frameworks unmount on their next render, and CSS keyed on the ending style

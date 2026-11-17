@@ -96,7 +96,6 @@ function Fixture() {
           </Show>
           <Show when={parts.nested}>
             <Dialog
-              defaultOpen={parts.nestedOpen}
               onOpenChange={(open, details) =>
                 recordOpenChange("nested", open, details)
               }
