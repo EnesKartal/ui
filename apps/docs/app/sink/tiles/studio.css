@@ -1140,7 +1140,7 @@
   background: var(--tile-surface);
   box-shadow:
     0 0 0 1px color-mix(in oklab, var(--tile-ink) 7%, transparent),
-    0 18px 40px -22px oklch(0.3 0.08 250 / 0.5);
+    var(--tile-shadow);
 }
 
 .st-chat-head {

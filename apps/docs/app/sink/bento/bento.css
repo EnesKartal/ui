@@ -475,7 +475,7 @@
     min-height: 0;
     display: grid;
     place-items: center;
-    padding: 22px 22px 8px;
+    padding: 22px 22px 16px;
     /* Nothing runs under the copy. Popups and dialogs sit in the top layer, past this clip. */
     overflow: hidden;
   }

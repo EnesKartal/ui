@@ -79,6 +79,7 @@ import {
   sectorOf,
   solveSpring,
 } from "@ui-sdk/core/gesture"
+import { clamp } from "@ui-sdk/core/number"
 import { createParts } from "@ui-sdk/react/primitive"
 import {
   Resizable,
@@ -2387,16 +2388,27 @@ function ThrowCard() {
   const fling = (direction: number, velocity: MovePoint) => {
     const el = top.current
     const width = el?.parentElement?.clientWidth ?? 260
+    const from = Math.abs(pos.current.x)
+    const to = width * 1.2
     cancel.current()
     cancel.current = runSpring(
       pos.current,
-      { x: direction * width * 1.2, y: pos.current.y + velocity.y * 80 },
+      { x: direction * to, y: pos.current.y + velocity.y * 80 },
       velocity,
-      paint,
+      (point) => {
+        paint(point)
+        if (el) {
+          const gone = (Math.abs(point.x) - from) / (to - from)
+          el.style.opacity = String(clamp(1 - gone, 0, 1))
+        }
+      },
       () => {
         if (el) {
           el.style.translate = ""
           el.style.rotate = ""
+          requestAnimationFrame(() => {
+            el.style.opacity = ""
+          })
         }
         pos.current = { x: 0, y: 0 }
         setDeck((current) => [...current.slice(1), current[0]])
@@ -2459,10 +2471,9 @@ function ThrowCard() {
 
   return (
     <div className="mo-deck">
-      {deck
-        .map((id, depth) => ({ id, depth }))
-        .reverse()
-        .map(({ id, depth }) => (
+      {Object.keys(PLACES).map((id) => {
+        const depth = deck.indexOf(id)
+        return (
           <div
             key={id}
             ref={depth === 0 ? top : undefined}
@@ -2486,7 +2497,8 @@ function ThrowCard() {
             <span className="mo-place-name">{PLACES[id].name}</span>
             <span className="mo-place-kind">{PLACES[id].kind}</span>
           </div>
-        ))}
+        )
+      })}
     </div>
   )
 }
@@ -2800,15 +2812,15 @@ function SplitPanes() {
         <ul className="mo-split-layers">
           <li>
             <FrameCornersIcon size={14} weight="fill" aria-hidden />
-            Page
+            <span>Page</span>
           </li>
           <li>
             <TextTIcon size={14} weight="fill" aria-hidden />
-            Title
+            <span>Title</span>
           </li>
           <li>
             <ImageIcon size={14} weight="fill" aria-hidden />
-            Cover
+            <span>Cover</span>
           </li>
         </ul>
       </ResizablePanel>

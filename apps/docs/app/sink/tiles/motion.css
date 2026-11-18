@@ -1719,7 +1719,9 @@
   transform: translateY(calc(var(--depth) * -10px))
     scale(calc(1 - var(--depth) * 0.06));
   transform-origin: 50% 0;
-  transition: transform 260ms var(--ease-out);
+  transition:
+    transform 260ms var(--ease-out),
+    opacity 200ms var(--ease-out);
   cursor: grab;
   touch-action: none;
   user-select: none;
@@ -1736,6 +1738,10 @@
 
 .mo-place[data-depth="2"] {
   z-index: 1;
+}
+
+.mo-place > * {
+  transition: opacity 200ms var(--ease-out);
 }
 
 .mo-place:not([data-depth="0"]) > * {
@@ -2098,6 +2104,12 @@
   border-radius: 6px;
   font-size: 12px;
   white-space: nowrap;
+}
+
+.mo-split-layers span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .mo-split-layers li:first-child {

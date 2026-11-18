@@ -1,9 +1,14 @@
 import { tiles as collections } from "../tiles/collections"
 import { tiles as drag } from "../tiles/drag"
 import { tiles as forms } from "../tiles/forms"
+import { tiles as gestures } from "../tiles/gestures"
 import { tiles as language } from "../tiles/language"
+import { tiles as layers } from "../tiles/layers"
+import { tiles as locale } from "../tiles/locale"
 import { tiles as motion } from "../tiles/motion"
 import { tiles as overlays } from "../tiles/overlays"
+import { tiles as pickers } from "../tiles/pickers"
+import { tiles as records } from "../tiles/records"
 import { tiles as reference } from "../tiles/reference"
 import { tiles as studio } from "../tiles/studio"
 import type { TaggedTile, Tile } from "./types"
@@ -15,11 +20,11 @@ export const kindOf = (name: string) =>
 
 export const groups: Record<string, Tile[]> = {
   reference,
-  forms,
-  overlays,
-  collections,
-  motion,
-  language,
+  forms: [...forms, ...pickers],
+  overlays: [...overlays, ...layers],
+  collections: [...collections, ...records],
+  motion: [...motion, ...gestures],
+  language: [...language, ...locale],
   drag,
   studio,
 }

@@ -152,7 +152,7 @@ function Formatting() {
 
 export const tiles: Tile[] = [
   {
-    id: "reference-radios",
+    id: "reference-switches",
     title: "Stay connected.",
     blurb: "Switches that slide and submit.",
     Demo: Radios,

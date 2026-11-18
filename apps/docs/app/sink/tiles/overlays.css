@@ -486,7 +486,7 @@
   font: 14px/1.45 var(--sans);
   box-shadow:
     0 0 0 1px color-mix(in oklab, var(--tile-ink) 8%, transparent),
-    0 24px 60px -28px oklch(0.2 0.02 60 / 0.35);
+    var(--tile-shadow);
 }
 
 .ov-cmd-search {
