@@ -451,7 +451,7 @@ function Player() {
           }
         }}
         onOpenChangeComplete={(open) => {
-          if (!open) {
+          if (!open && lifted) {
             player.current?.hidePopover()
             setLifted(null)
           }

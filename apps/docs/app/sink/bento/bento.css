@@ -54,7 +54,7 @@
     width: 100%;
     max-width: 1480px;
     margin: 0 auto;
-    padding: 0 28px 96px;
+    padding: 28px 28px 120px;
   }
 
   .sr-only {
@@ -66,52 +66,83 @@
     white-space: nowrap;
   }
 
-  /* The filter */
-
+  /* The filters: a tile's tags pick them, and this bar clears them. Square, like the docs' buttons. */
   .filter {
-    position: sticky;
-    top: 0;
-    @media (width >= 64rem) {
-      /* Below the docs header, which is 70px tall and shows from this width. */
-      top: 70px;
-    }
-    z-index: 5;
-    margin: 0 -28px 22px;
-    padding: 14px 28px 12px;
-    background: color-mix(in oklab, var(--paper) 88%, transparent);
-    backdrop-filter: blur(14px) saturate(1.2);
-    border-bottom: 1px solid var(--rule);
-  }
-
-  .filter-bar {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    z-index: 20;
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     gap: 10px;
+    max-width: calc(100vw - 32px);
+    padding: 6px 6px 6px 14px;
+    background: var(--ink);
+    color: var(--paper);
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--paper) 14%, transparent),
+      0 12px 32px -12px oklch(0.2 0.02 60 / 0.5);
+    translate: -50% calc(100% + 28px);
+    opacity: 0;
+    transition:
+      translate 320ms var(--ease-out),
+      opacity 200ms var(--ease-out);
   }
 
-  .filter-search {
-    width: 240px;
-    height: 34px;
-    padding: 0 12px;
-    border: 1px solid var(--rule);
-    border-radius: 999px;
-    background: var(--raised);
-    outline: none;
+  .filter[data-open] {
+    translate: -50% 0;
+    opacity: 1;
   }
 
-  .filter-search:focus-visible {
-    border-color: var(--ink-3);
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--signal) 22%, transparent);
+  @media (prefers-reduced-motion: reduce) {
+    .filter {
+      transition: opacity 160ms;
+    }
+  }
+
+  .filter-count {
+    flex: none;
+    margin: 0;
+    font: 500 12px/1 var(--mono);
+    color: color-mix(in oklab, var(--paper) 70%, transparent);
+    white-space: nowrap;
+  }
+
+  .filter-names {
+    display: flex;
+    gap: 4px;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    list-style: none;
+  }
+
+  .filter-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 8px;
+    border: 1px solid color-mix(in oklab, var(--paper) 22%, transparent);
+    background: transparent;
+    font: 12px/1 var(--mono);
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .filter-name:hover {
+    border-color: color-mix(in oklab, var(--paper) 55%, transparent);
   }
 
   .filter-mode {
     position: relative;
     isolation: isolate;
+    flex: none;
     display: inline-flex;
-    padding: 3px;
-    border-radius: 999px;
-    background: var(--paper-2);
+    padding: 2px;
+    border: 1px solid color-mix(in oklab, var(--paper) 22%, transparent);
   }
 
   .filter-mode-indicator {
@@ -121,23 +152,19 @@
     left: var(--segmented-control-indicator-left);
     width: var(--segmented-control-indicator-width);
     height: var(--segmented-control-indicator-height);
-    border-radius: 999px;
-    background: var(--raised);
-    box-shadow: 0 1px 2px oklch(0 0 0 / 0.08);
+    background: var(--paper);
     transition-property: left, width;
-    transition-duration: 220ms;
+    transition-duration: 200ms;
     transition-timing-function: var(--ease-out);
   }
 
   .filter-mode button {
-    height: 28px;
-    padding: 0 12px;
+    height: 22px;
+    padding: 0 8px;
     border: 0;
-    border-radius: 999px;
     background: transparent;
-    color: var(--ink-2);
-    font-weight: 500;
-    transition: color 160ms var(--ease-out);
+    font: 500 12px/1 var(--sans);
+    cursor: pointer;
   }
 
   .filter-mode button[data-checked] {
@@ -145,155 +172,27 @@
   }
 
   .filter-mode:not(:has(> .filter-mode-indicator[style])) button[data-checked] {
-    background: var(--raised);
-    box-shadow: 0 1px 2px oklch(0 0 0 / 0.08);
-  }
-
-  .filter-count {
-    margin: 0 0 0 auto;
-    font: 500 12px var(--mono);
-    color: var(--ink-3);
-  }
-
-  .filter-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    height: 34px;
-    padding: 0 12px 0 14px;
-    border: 0;
-    border-radius: 999px;
-    background: var(--ink);
-    color: var(--paper);
-    font-weight: 500;
-    cursor: pointer;
-  }
-
-  .filter-toggle:focus-visible {
-    outline: 2px solid var(--signal);
-    outline-offset: 2px;
-  }
-
-  .filter-toggle-caret {
-    transition: rotate 220ms var(--ease-out);
-  }
-
-  .filter-toggle[data-open] .filter-toggle-caret {
-    rotate: 180deg;
-  }
-
-  /* Opens over the tiles, below the bar, so nothing below it moves. */
-  .filter-panel {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    height: var(--collapsible-panel-height);
-    overflow: hidden;
     background: var(--paper);
-    border-bottom: 1px solid var(--rule);
-    box-shadow: 0 24px 40px -24px oklch(0 0 0 / 0.28);
-    transition: height 240ms var(--ease-out);
   }
 
-  .filter-panel[data-starting-style],
-  .filter-panel[data-ending-style] {
-    height: 0;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .filter-panel,
-    .filter-toggle-caret {
-      transition: none;
-    }
-  }
-
-  .filter-groups {
-    display: grid;
-    grid-template-columns: max-content 1fr;
-    gap: 8px 14px;
-    padding: 4px 28px 16px;
-  }
-
-  .filter-group {
-    display: contents;
-  }
-
-  .filter-group-label {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-    margin: 0;
-    padding-top: 4px;
-    font-weight: 500;
-    font-size: 12.5px;
-    color: var(--ink-2);
-  }
-
-  .filter-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-  }
-
-  .filter-chips .filter-chip {
-    height: 22px;
-    padding: 0 8px;
-    font-size: 11px;
-  }
-
-  .filter-none {
-    margin: 0;
-    padding: 3px 0;
-    color: var(--ink-3);
-  }
-
-  .filter-chip,
-  .tile-use {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    height: 24px;
-    padding: 0 9px;
-    border: 1px solid var(--rule);
-    border-radius: 999px;
-    background: var(--raised);
-    font: 500 11.5px/1 var(--mono);
-    color: var(--ink-2);
-    cursor: pointer;
-    transition:
-      background 120ms,
-      border-color 120ms,
-      color 120ms;
-  }
-
-  .filter-chip:hover,
-  .tile-use:hover {
-    border-color: var(--ink-3);
+  .filter-clear {
+    flex: none;
+    height: 28px;
+    padding: 0 12px;
+    border: 0;
+    background: var(--paper);
     color: var(--ink);
+    font: 500 13px/1 var(--sans);
+    white-space: nowrap;
+    cursor: pointer;
   }
 
-  .filter-chip[data-pressed],
-  .tile-use[data-pressed] {
-    background: var(--ink);
-    border-color: var(--ink);
-    color: var(--paper);
+  .filter-clear:hover {
+    background: var(--raised);
   }
 
-  .filter-chip[data-kind="helper"]:not([data-pressed]) {
-    background: var(--paper-2);
-  }
-
-  .filter-chip-count {
-    color: var(--ink-3);
-    font-weight: 400;
-  }
-
-  .filter-chip[data-pressed] .filter-chip-count {
-    color: color-mix(in oklab, var(--paper) 70%, transparent);
-  }
-
-  .filter-chip:focus-visible,
+  .filter-name:focus-visible,
+  .filter-clear:focus-visible,
   .tile-use:focus-visible,
   .filter-mode button:focus-visible,
   .b-btn:focus-visible {
@@ -345,7 +244,7 @@
     color: var(--tile-ink);
     box-shadow: inset 0 0 0 1px
       color-mix(in oklab, var(--tile-ink) 6%, transparent);
-    scroll-margin-top: 220px;
+    scroll-margin-top: 110px;
   }
 
   .tile[data-size="wide"] {
@@ -363,20 +262,7 @@
 
   @media (max-width: 640px) {
     & {
-      padding: 0 16px 64px;
-    }
-    .filter {
-      margin: 0 -16px 18px;
-      padding: 12px 16px;
-    }
-    .filter-groups {
-      padding: 4px 16px 14px;
-    }
-    .filter-search {
-      width: 100%;
-    }
-    .filter-groups {
-      grid-template-columns: 1fr;
+      padding: 16px 16px 96px;
     }
     .tile[data-size="wide"],
     .tile[data-size="large"] {

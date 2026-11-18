@@ -62,15 +62,6 @@ function Sink() {
         : tiles,
     [only]
   )
-  const counts = useMemo(() => {
-    const map = new Map<string, number>()
-    for (const tile of pool) {
-      for (const name of tile.uses) {
-        map.set(name, (map.get(name) ?? 0) + 1)
-      }
-    }
-    return map
-  }, [pool])
   const chosen = new Set(selected)
   const shown = pool.filter((tile) =>
     !selected.length
@@ -90,15 +81,6 @@ function Sink() {
   return (
     <div className="sink">
       <h1 className="sr-only">ui-sdk sink</h1>
-      <Filter
-        counts={counts}
-        selected={selected}
-        onSelectedChange={setSelected}
-        mode={mode}
-        onModeChange={setMode}
-        shown={shown.length}
-        total={pool.length}
-      />
       <main className="bento">
         {shown.map((tile) => (
           <Tile key={tile.id} tile={tile} selected={chosen} onToggle={toggle} />
@@ -107,6 +89,13 @@ function Sink() {
           <p className="bento-empty">No tile uses all of those together.</p>
         )}
       </main>
+      <Filter
+        selected={selected}
+        onSelectedChange={setSelected}
+        mode={mode}
+        onModeChange={setMode}
+        shown={shown.length}
+      />
     </div>
   )
 }
