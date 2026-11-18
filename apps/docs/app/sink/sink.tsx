@@ -63,13 +63,13 @@ function Sink() {
     [only]
   )
   const chosen = new Set(selected)
-  const shown = pool.filter((tile) =>
+  const matches = (tile: (typeof tiles)[number]) =>
     !selected.length
       ? true
       : mode === "all"
         ? selected.every((name) => tile.uses.includes(name))
         : tile.uses.some((name) => chosen.has(name))
-  )
+  const shown = pool.filter(matches)
 
   const toggle = (name: string, pressed: boolean) =>
     setSelected((current) =>
@@ -82,8 +82,14 @@ function Sink() {
     <div className="sink">
       <h1 className="sr-only">ui-sdk sink</h1>
       <main className="bento">
-        {shown.map((tile) => (
-          <Tile key={tile.id} tile={tile} selected={chosen} onToggle={toggle} />
+        {pool.map((tile) => (
+          <Tile
+            key={tile.id}
+            tile={tile}
+            hidden={!matches(tile)}
+            selected={chosen}
+            onToggle={toggle}
+          />
         ))}
         {!shown.length && (
           <p className="bento-empty">No tile uses all of those together.</p>

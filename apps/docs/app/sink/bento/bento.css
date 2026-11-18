@@ -191,6 +191,33 @@
     background: var(--raised);
   }
 
+  .tile-use {
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 9px;
+    border: 1px solid var(--rule);
+    background: var(--raised);
+    font: 500 11.5px/1 var(--mono);
+    color: var(--ink-2);
+    cursor: pointer;
+    transition:
+      background 120ms,
+      border-color 120ms,
+      color 120ms;
+  }
+
+  .tile-use:hover {
+    border-color: var(--ink-3);
+    color: var(--ink);
+  }
+
+  .tile-use[data-pressed] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+
   .filter-name:focus-visible,
   .filter-clear:focus-visible,
   .tile-use:focus-visible,
@@ -245,6 +272,10 @@
     box-shadow: inset 0 0 0 1px
       color-mix(in oklab, var(--tile-ink) 6%, transparent);
     scroll-margin-top: 110px;
+  }
+
+  .tile[hidden] {
+    display: none;
   }
 
   .tile[data-size="wide"] {

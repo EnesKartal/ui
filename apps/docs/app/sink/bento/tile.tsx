@@ -1,5 +1,5 @@
 import { Toggle } from "@ui-sdk/react/toggle"
-import { Component, type ReactNode } from "react"
+import { Component, memo, type ComponentType, type ReactNode } from "react"
 import type { TaggedTile as TileData } from "./types"
 
 class Boundary extends Component<
@@ -22,26 +22,40 @@ class Boundary extends Component<
   }
 }
 
+// Picking a tag rerenders every tile's tags, never its demo.
+const Stage = memo(function Stage({
+  id,
+  Demo,
+}: {
+  id: string
+  Demo: ComponentType
+}) {
+  return (
+    <div className="tile-stage">
+      <Boundary id={id}>
+        <Demo />
+      </Boundary>
+    </div>
+  )
+})
+
 type Props = {
   tile: TileData
+  hidden: boolean
   selected: ReadonlySet<string>
   onToggle: (name: string, pressed: boolean) => void
 }
 
-export function Tile({ tile, selected, onToggle }: Props) {
-  const { Demo } = tile
+export function Tile({ tile, hidden, selected, onToggle }: Props) {
   return (
     <article
       className="tile"
       data-size={tile.size ?? "s"}
       data-tone={tile.tone ?? "white"}
       id={tile.id}
+      hidden={hidden}
     >
-      <div className="tile-stage">
-        <Boundary id={tile.id}>
-          <Demo />
-        </Boundary>
-      </div>
+      <Stage id={tile.id} Demo={tile.Demo} />
       <footer className="tile-copy">
         <p className="tile-title">
           <strong>{tile.title}</strong> {tile.blurb}
