@@ -32,15 +32,27 @@
     "./accordion": "./src/accordion.ts",
     "./avatar": "./src/avatar.ts",
     "./button": "./src/button.ts",
+    "./checkbox": "./src/checkbox.ts",
     "./collapsible": "./src/collapsible.ts",
     "./dialog": "./src/dialog.ts",
+    "./field": "./src/field.ts",
+    "./input": "./src/input.ts",
     "./label": "./src/label.ts",
     "./meter": "./src/meter.ts",
+    "./number-input": "./src/number-input.ts",
+    "./otp-input": "./src/otp-input.ts",
     "./pagination": "./src/pagination.ts",
+    "./password-input": "./src/password-input.ts",
     "./primitive": "./src/primitive.ts",
     "./progress": "./src/progress.ts",
+    "./radio": "./src/radio.ts",
+    "./rating": "./src/rating.ts",
+    "./segmented-control": "./src/segmented-control.ts",
     "./separator": "./src/separator.ts",
+    "./slider": "./src/slider.ts",
+    "./switch": "./src/switch.ts",
     "./tabs": "./src/tabs.ts",
+    "./textarea": "./src/textarea.ts",
     "./timeline": "./src/timeline.ts",
     "./toggle": "./src/toggle.ts",
     "./toolbar": "./src/toolbar.ts"
@@ -63,6 +75,10 @@
         "types": "./dist/button.d.ts",
         "default": "./dist/button.js"
       },
+      "./checkbox": {
+        "types": "./dist/checkbox.d.ts",
+        "default": "./dist/checkbox.js"
+      },
       "./collapsible": {
         "types": "./dist/collapsible.d.ts",
         "default": "./dist/collapsible.js"
@@ -70,6 +86,14 @@
       "./dialog": {
         "types": "./dist/dialog.d.ts",
         "default": "./dist/dialog.js"
+      },
+      "./field": {
+        "types": "./dist/field.d.ts",
+        "default": "./dist/field.js"
+      },
+      "./input": {
+        "types": "./dist/input.d.ts",
+        "default": "./dist/input.js"
       },
       "./label": {
         "types": "./dist/label.d.ts",
@@ -79,9 +103,21 @@
         "types": "./dist/meter.d.ts",
         "default": "./dist/meter.js"
       },
+      "./number-input": {
+        "types": "./dist/number-input.d.ts",
+        "default": "./dist/number-input.js"
+      },
+      "./otp-input": {
+        "types": "./dist/otp-input.d.ts",
+        "default": "./dist/otp-input.js"
+      },
       "./pagination": {
         "types": "./dist/pagination.d.ts",
         "default": "./dist/pagination.js"
+      },
+      "./password-input": {
+        "types": "./dist/password-input.d.ts",
+        "default": "./dist/password-input.js"
       },
       "./primitive": {
         "types": "./dist/primitive.d.ts",
@@ -91,13 +127,37 @@
         "types": "./dist/progress.d.ts",
         "default": "./dist/progress.js"
       },
+      "./radio": {
+        "types": "./dist/radio.d.ts",
+        "default": "./dist/radio.js"
+      },
+      "./rating": {
+        "types": "./dist/rating.d.ts",
+        "default": "./dist/rating.js"
+      },
+      "./segmented-control": {
+        "types": "./dist/segmented-control.d.ts",
+        "default": "./dist/segmented-control.js"
+      },
       "./separator": {
         "types": "./dist/separator.d.ts",
         "default": "./dist/separator.js"
       },
+      "./slider": {
+        "types": "./dist/slider.d.ts",
+        "default": "./dist/slider.js"
+      },
+      "./switch": {
+        "types": "./dist/switch.d.ts",
+        "default": "./dist/switch.js"
+      },
       "./tabs": {
         "types": "./dist/tabs.d.ts",
         "default": "./dist/tabs.js"
+      },
+      "./textarea": {
+        "types": "./dist/textarea.d.ts",
+        "default": "./dist/textarea.js"
       },
       "./timeline": {
         "types": "./dist/timeline.d.ts",

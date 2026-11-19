@@ -15,6 +15,7 @@ import {
   type Signal,
 } from "@angular/core"
 import type {
+  Attrs,
   OptionsOf,
   Primitive,
   PropsOf,
@@ -106,6 +107,34 @@ const sameState = (a: object, b: object) => {
   )
 }
 
+// The first part of a slot keeps core's own key, so the ids other parts point
+// at before anything binds, like a field label's, are the ones it renders.
+// Another part of that slot, like a dialog's second Close, takes its own.
+const lone = new WeakMap<object, Map<string, string>>()
+
+function claim(instance: object, slot: string, holder: string) {
+  const slots = lone.get(instance) ?? new Map<string, string>()
+  lone.set(instance, slots)
+  if (!slots.has(slot)) {
+    slots.set(slot, holder)
+  }
+  return slots.get(slot) === holder
+}
+
+function release(instance: object, slot: string, holder: string) {
+  const slots = lone.get(instance)
+  if (slots?.get(slot) === holder) {
+    slots.delete(slot)
+  }
+}
+
+// A second part on the same element, like a field's control part on a
+// switch: its attributes merge into the element's own part and it binds too.
+type Joined = {
+  part: () => Parameters<typeof partAttrs>[0] | undefined
+  merge: (own: Attrs, joined: Attrs) => Attrs
+}
+
 /**
  * Binds the directive's element to one part of a component. Call it in a
  * field initializer. On an element, the part stays in the page and is hidden
@@ -116,7 +145,8 @@ const sameState = (a: object, b: object) => {
 function usePart<P extends Primitive, S extends SlotName<P>>(
   owner: PrimitiveHandle<P>,
   slot: S,
-  props: () => PropsOf<P, S> = () => ({}) as PropsOf<P, S>
+  props: () => PropsOf<P, S> = () => ({}) as PropsOf<P, S>,
+  joined?: Joined
 ) {
   const host =
     inject<ElementRef<HTMLElement | Comment>>(ElementRef).nativeElement
@@ -126,16 +156,15 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
   const channel = `render:${own}`
   // Core keeps one part per key and gives it the new props, so the same
   // object comes back and only this computed can say that it changed.
+  let lone: boolean | undefined
   const part = computed(
     () => {
       const given = props() as PropsOf<P, S> & { id?: string; value?: unknown }
-      // Two parts of one slot, like a dialog's Close buttons, each need a key.
-      return owner.instance.part(
-        slot,
-        given.value === undefined && given.id === undefined
-          ? { ...given, id: own }
-          : given
-      )
+      if (given.value !== undefined || given.id !== undefined) {
+        return owner.instance.part(slot, given)
+      }
+      lone ??= claim(owner.instance, slot, own)
+      return owner.instance.part(slot, lone ? given : { ...given, id: own })
     },
     { equal: () => false }
   )
@@ -153,7 +182,9 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
   let view: EmbeddedViewRef<unknown> | undefined
   let inPage = false
   let shown = false
-  let bound: { el: HTMLElement; part: unknown; unbind: () => void } | undefined
+  let bound:
+    | { el: HTMLElement; part: unknown; joined: unknown; unbind: () => void }
+    | undefined
 
   const unbind = () => {
     const current = bound
@@ -170,7 +201,10 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
     }
     const current = untracked(part)
     const present = isPresent(current)
-    const attrs = partAttrs(current)
+    const other = joined && untracked(joined.part)
+    const attrs = other
+      ? joined.merge(partAttrs(current), partAttrs(other))
+      : partAttrs(current)
     if (present) {
       if (
         attrs["hidden"] === undefined &&
@@ -189,13 +223,24 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
       }
     }
     shown = present
-    if (bound && (!present || bound.el !== el || bound.part !== current)) {
+    if (
+      bound &&
+      (!present ||
+        bound.el !== el ||
+        bound.part !== current ||
+        bound.joined !== other)
+    ) {
       unbind()
     }
     if (inPage && present && !bound) {
-      const binding = { el, part: current, unbind: () => {} }
+      const binding = { el, part: current, joined: other, unbind: () => {} }
       bound = binding
-      binding.unbind = bind(current, el)
+      const unbindOwn = bind(current, el)
+      const unbindOther = other && bind(other, el)
+      binding.unbind = () => {
+        unbindOther?.()
+        unbindOwn()
+      }
     }
   }
 
@@ -238,9 +283,27 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
     onCleanup(unsubscribe)
   })
 
+  if (joined) {
+    effect((onCleanup) => {
+      const other = joined.part()
+      if (!other) {
+        return
+      }
+      onCleanup(
+        untracked(() =>
+          subscribe(other, () => {
+            sync()
+            changes.update((count) => count + 1)
+          })
+        )
+      )
+    })
+  }
+
   effect(() => {
     changes()
     part()
+    joined?.part()
     element()
     untracked(() => {
       render()
@@ -261,6 +324,9 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
 
   inject(DestroyRef).onDestroy(() => {
     unbind()
+    if (lone) {
+      release(owner.instance, slot, own)
+    }
     const el = untracked(element)
     if (el) {
       releaseAttrs(el, channel)
@@ -281,4 +347,4 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
   return { present, state }
 }
 
-export { type PrimitiveHandle, useId, usePart, usePrimitive }
+export { type Joined, type PrimitiveHandle, useId, usePart, usePrimitive }

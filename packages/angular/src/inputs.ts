@@ -9,4 +9,10 @@ const optionalBoolean = (value: unknown) =>
 const optionalNumber = (value: unknown) =>
   value === undefined ? undefined : numberAttribute(value)
 
-export { optionalBoolean, optionalNumber }
+// A number that may be `null`, like a rating with no score yet.
+const nullableNumber = (value: unknown) =>
+  value === undefined || value === null
+    ? (value as null | undefined)
+    : numberAttribute(value)
+
+export { nullableNumber, optionalBoolean, optionalNumber }
