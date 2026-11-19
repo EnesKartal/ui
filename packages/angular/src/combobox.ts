@@ -163,7 +163,7 @@ class Combobox<Value = any> {
   readonly pendingAnnouncement: InputSignal<
     ComboboxOptions<any, boolean>["pendingAnnouncement"]
   > = input()
-  /** The items as data. Renders the list for you, and filters it without rendering every item. */
+  /** The items as data. A `uiComboboxItems` inside renders them, and the combobox filters them without rendering every item. */
   readonly items: InputSignal<ComboboxOptions<any, boolean>["items"]> = input()
   /** Items shown instead of `items` while the input is empty, like recent choices. Needs `items`. */
   readonly emptyItems: InputSignal<
@@ -393,7 +393,7 @@ class ComboboxContent {
 }
 
 /**
- * The listbox. Without children, it renders the combobox's `items`, filtered.
+ * The listbox. Put `uiComboboxItems` inside to render the combobox's `items`, filtered.
  * @experimental
  */
 @Directive({ selector: "[uiComboboxList]", exportAs: "uiComboboxList" })
@@ -556,7 +556,7 @@ class ComboboxEmpty {
 }
 
 /**
- * A polite live region for loading and result counts. Its content is yours, from its children's state.
+ * A polite live region for loading and result counts. Its content is yours, from its `state()`.
  * @experimental
  */
 @Directive({ selector: "[uiComboboxStatus]", exportAs: "uiComboboxStatus" })

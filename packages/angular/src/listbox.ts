@@ -77,7 +77,7 @@ class Listbox<Value = any> {
   readonly virtualFocus = input(undefined, { transform: optionalBoolean })
   /** Whether the list scrolls the option keys move to into view, and the selected option when it first shows. */
   readonly keepInView = input(undefined, { transform: optionalBoolean })
-  /** The items as data. Renders them for you. */
+  /** The items as data. A `uiListboxItems` inside renders them. */
   readonly items: InputSignal<ListboxOptions<any, boolean>["items"]> = input()
   /** The string an item's value submits as and is identified by, for object values. */
   readonly itemToValue: InputSignal<

@@ -123,7 +123,7 @@ class Autocomplete {
     >()
   /** Runs with the text when Enter is pressed with no suggestion highlighted, or after choosing one with `submitOnSelect`. The surrounding form submits next, unless the event's `preventDefault()` is called. */
   readonly submit = output<AutocompleteSubmit>()
-  /** The suggestions as data. Renders them for you, and filters them without rendering every one. */
+  /** The suggestions as data. A `uiAutocompleteItems` inside renders them, and the autocomplete filters them without rendering every one. */
   readonly items: InputSignal<AutocompleteOptions["items"]> = input()
   /** Suggestions shown instead of `items` while the field is empty, like recent searches, with `openOnFocus`. Needs `items`. */
   readonly emptyItems: InputSignal<AutocompleteOptions["emptyItems"]> = input()
@@ -355,7 +355,7 @@ class AutocompleteContent {
 }
 
 /**
- * The listbox. Without children, it renders the autocomplete's `items`, filtered.
+ * The listbox. Put `uiAutocompleteItems` inside to render the autocomplete's `items`, filtered.
  * @experimental
  */
 @Directive({ selector: "[uiAutocompleteList]", exportAs: "uiAutocompleteList" })
@@ -519,7 +519,7 @@ class AutocompleteEmpty {
 }
 
 /**
- * A polite live region for loading and result counts. Its content is yours, from its children's state.
+ * A polite live region for loading and result counts. Its content is yours, from its `state()`.
  * @experimental
  */
 @Directive({

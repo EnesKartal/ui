@@ -10,6 +10,8 @@ import { mount } from "./mount"
   imports: [Toggle, ToggleGroup, Toolbar, ToolbarButton, ToolbarGroup],
   template: `
     <button uiToggle id="bold" [(pressed)]="bold">Bold</button>
+    <button uiToggle id="kept" (click)="$event.preventDefault()">Kept</button>
+    <button uiToggle id="fixed" [pressed]="false">Fixed</button>
     <div uiToggleGroup id="align" [(value)]="align">
       <button uiToggle value="left">Left</button>
       <button uiToggle value="right">Right</button>
@@ -44,6 +46,20 @@ describe("toggle", () => {
     await settle()
     expect(instance.bold()).toBe(true)
     expect(el(host, "#bold").getAttribute("aria-pressed")).toBe("true")
+  })
+
+  test("an author's click handler runs first and can skip the toggle's", async () => {
+    const { host, settle } = await mount(Page)
+    el(host, "#kept").click()
+    await settle()
+    expect(el(host, "#kept").getAttribute("aria-pressed")).toBe("false")
+  })
+
+  test("a one-way bound value stays as the parent says", async () => {
+    const { host, settle } = await mount(Page)
+    el(host, "#fixed").click()
+    await settle()
+    expect(el(host, "#fixed").getAttribute("aria-pressed")).toBe("false")
   })
 
   test("a toggle in a group takes its pressed state from the group", async () => {

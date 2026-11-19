@@ -104,7 +104,7 @@ class Rating {
 }
 
 /**
- * One star. Put its icon inside: the snippet gets how full it is, and the radios that pick its score sit over it.
+ * One star. Put its icon inside, and read how full it is from its `state()`. The radios that pick its score sit over it.
  * Render one per entry of the Rating's `items()`, with its `index`.
  * @experimental
  */

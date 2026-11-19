@@ -150,7 +150,7 @@ class Select<Value = any> {
     >()
   /** Whether several items can be selected. The value is then a list. */
   readonly multiple = input(undefined, { transform: optionalBoolean })
-  /** The items as data. Renders them for you. */
+  /** The items as data. A `uiSelectItems` inside renders them. */
   readonly items: InputSignal<SelectOptions<any, boolean>["items"]> = input()
   /** What the list shows while the search is empty, like recent choices. */
   readonly emptyItems: InputSignal<SelectOptions<any, boolean>["emptyItems"]> =
@@ -457,7 +457,7 @@ class SelectContent {
 }
 
 /**
- * The listbox, when the content holds more than items, like a `SelectInput`. Without children, it renders the select's `items` that match.
+ * The listbox, when the content holds more than items, like a `SelectInput`. Put `uiSelectItems` inside to render the select's `items` that match.
  * @experimental
  */
 @Directive({ selector: "[uiSelectList]", exportAs: "uiSelectList" })
@@ -621,7 +621,7 @@ class SelectEmpty {
 }
 
 /**
- * A polite live region for loading and result counts. Its content is yours, from its children's state.
+ * A polite live region for loading and result counts. Its content is yours, from its `state()`.
  * @experimental
  */
 @Directive({ selector: "[uiSelectStatus]", exportAs: "uiSelectStatus" })

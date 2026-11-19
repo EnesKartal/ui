@@ -167,7 +167,7 @@ class DatePickerTrigger {
 }
 
 /**
- * The popup. Without content it renders Previous, the heading, Next and a grid for each month; every Calendar part works inside it. `*uiDatePickerContent` renders it only while it's shown.
+ * The popup. Put Calendar parts inside it, like `uiCalendarHeading` and a `uiCalendarGrid` for each month. `*uiDatePickerContent` renders it only while it's shown.
  * @experimental
  */
 @Directive({
@@ -498,6 +498,18 @@ class DatePicker<Value extends DatePickerValue = any> {
   }
 }
 
+export {
+  CalendarDay,
+  CalendarGrid,
+  CalendarHeading,
+  CalendarMonthSelect,
+  CalendarNext,
+  CalendarPrevious,
+  CalendarWeekday,
+  CalendarWeekdays,
+  CalendarWeeks,
+  CalendarYearSelect,
+} from "./calendar"
 export { createDatePickerController } from "@ui-sdk/core/date-picker"
 export type {
   CalendarDayState,

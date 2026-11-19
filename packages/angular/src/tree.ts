@@ -104,7 +104,7 @@ type TreeHighlight = Parameters<NonNullable<TreeOptions["onHighlight"]>>[1] & {
 class Tree<Value extends TreeValue<TreeMode> = any> {
   /** Logs every state change with its reason. */
   readonly debug = input(undefined, { transform: optionalBoolean })
-  /** The items as data: each a `value`, a `label` and, for a branch, `children`. Renders them for you, and gives the tree its whole shape even where rows aren't rendered. */
+  /** The items as data: each a `value`, a `label` and, for a branch, `children`. A `uiTreeItems` inside renders them, and they give the tree its whole shape even where rows aren't rendered. */
   readonly items: InputSignal<TreeOptions["items"]> = input()
   /** Items from file paths, like `["src/index.ts", "README.md"]`: each folder becomes a branch, folders first. A path ending in `/` is an empty folder. */
   readonly paths: InputSignal<TreeOptions["paths"]> = input()

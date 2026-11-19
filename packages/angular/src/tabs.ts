@@ -6,7 +6,7 @@ import {
 } from "@ui-sdk/core/tabs"
 import { optionalBoolean } from "./inputs"
 import { emitChange, type Change } from "./outputs"
-import { usePart, usePrimitive } from "./use-primitive"
+import { useId, usePart, usePrimitive } from "./use-primitive"
 
 /**
  * What `(beforeValueChange)` emits: the value the tabs are about to take, why,
@@ -82,6 +82,23 @@ class TabsTab {
 }
 
 /**
+ * An icon inside a tab. A tab with only an icon needs an `aria-label`. Screen readers skip it, and `mirror` flips it in right-to-left text.
+ * @experimental
+ */
+@Directive({ selector: "[uiTabsTabIcon]", exportAs: "uiTabsTabIcon" })
+class TabsTabIcon {
+  /** Flips the icon horizontally in right-to-left text, for icons that point a way, like arrows and chevrons. Icons that picture a thing, like a clock or a check, stay as they are. */
+  readonly mirror = input(undefined, { transform: optionalBoolean })
+
+  readonly #id = useId()
+  /** The icon's state, as a signal. */
+  readonly state = usePart(inject(Tabs).handle, "tab-icon", () => ({
+    id: this.#id,
+    mirror: this.mirror(),
+  })).state
+}
+
+/**
  * Marks the selected tab. Its box comes from the `--active-tab-*` variables, measured from the tab list.
  * @experimental
  */
@@ -141,5 +158,6 @@ export {
   TabsList,
   TabsPanel,
   TabsTab,
+  TabsTabIcon,
   type TabsValueChange,
 }

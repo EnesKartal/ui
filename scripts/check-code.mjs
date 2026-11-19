@@ -187,11 +187,8 @@ const importLayersAllowlist = {
 // Public exports public-docs-pages lets through until a docs page names them.
 const undocumentedExports = new Set([
   "AutocompleteItems",
-  "ComboboxItems",
   "CommandItems",
   "ListboxItems",
-  "MenuItems",
-  "SelectItems",
   "TokenInputTokenDef",
   "TreeItems",
   "TriggerMenuItems",

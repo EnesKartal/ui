@@ -74,7 +74,7 @@ class Pagination {
 }
 
 /**
- * The list of pages and steps. Its children get the state, whose `items` are the pages to show.
+ * The list of pages and steps. Its `state()` has `items`, the pages to show.
  * @experimental
  */
 @Directive({ selector: "[uiPaginationList]", exportAs: "uiPaginationList" })

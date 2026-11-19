@@ -138,7 +138,7 @@ class Command {
   readonly pendingAnnouncement: InputSignal<
     CommandOptions["pendingAnnouncement"]
   > = input()
-  /** The commands as data. Renders them for you, ranked as the user types, with pages for commands that have `items`. */
+  /** The commands as data. A `uiCommandItems` inside renders them, ranked as the user types, with pages for commands that have `items`. */
   readonly items: InputSignal<CommandOptions["items"]> = input()
   /** Commands shown instead of `items` on the first page while the search is empty, like recent ones. Needs `items`. */
   readonly emptyItems: InputSignal<CommandOptions["emptyItems"]> = input()
@@ -199,7 +199,7 @@ class CommandInput {
 }
 
 /**
- * The listbox. Without content, it renders the command's `items`, ranked as the user types.
+ * The listbox. Put `uiCommandItems` inside to render the command's `items`, ranked as the user types.
  * @experimental
  */
 @Directive({ selector: "[uiCommandList]", exportAs: "uiCommandList" })
@@ -371,7 +371,7 @@ class CommandEmpty {
 }
 
 /**
- * A polite live region for loading and result counts. Its content is yours, from its children's state.
+ * A polite live region for loading and result counts. Its content is yours, from its `state()`.
  * @experimental
  */
 @Directive({ selector: "[uiCommandStatus]", exportAs: "uiCommandStatus" })

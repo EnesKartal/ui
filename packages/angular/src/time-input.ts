@@ -55,7 +55,7 @@ class TimeInputSegment {
 }
 
 /**
- * The root: a group of segments, hours and minutes, with seconds and AM/PM when shown, and the hidden input the time submits with. Without children it renders every segment; its children snippet receives its state and can render `state.segments`.
+ * The root: a group of segments, hours and minutes, with seconds and AM/PM when shown, and the hidden input the time submits with. Left empty, it renders every segment; to render your own, loop over `state().segments`.
  * @experimental
  */
 @Component({

@@ -55,7 +55,7 @@ class DateInputSegment {
 }
 
 /**
- * The root: a group of segments the locale orders, like month, day and year, and the hidden input the ISO value submits with. Without children it renders every segment; its children snippet receives its state and can render `state.segments`.
+ * The root: a group of segments the locale orders, like month, day and year, and the hidden input the ISO value submits with. Left empty, it renders every segment; to render your own, loop over `state().segments`.
  * @experimental
  */
 @Component({
