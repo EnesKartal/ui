@@ -344,15 +344,24 @@ const triggerMenuSlots = (
       "data-loading": state.loading === "loading" ? "" : undefined,
     }),
     bind(el, { api, store, props }) {
+      let bound = true
       if (!store.get().hasEmpty) {
-        queueMicrotask(api.internal.markEmptyPart)
+        queueMicrotask(() => bound && api.internal.markEmptyPart())
       }
-      if (props.stash) {
-        return stashContent(
-          el,
-          () => api.internal.isEmpty(store.get()),
-          store.subscribe
-        )
+      const unstash = props.stash
+        ? stashContent(
+            el,
+            () => api.internal.isEmpty(store.get()),
+            store.subscribe
+          )
+        : undefined
+      return () => {
+        bound = false
+        unstash?.()
+        store.set({ hasEmpty: false })
+        if (store.get().open) {
+          api.internal.settle()
+        }
       }
     },
   }),

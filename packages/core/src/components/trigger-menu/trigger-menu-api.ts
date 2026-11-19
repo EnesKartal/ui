@@ -403,14 +403,15 @@ function triggerMenuApiBody(
     return listbox.entries().length > 0
   }
 
-  // Opens or closes the list for the current level: it shows while items
-  // match, while they load, or while an empty part can say there are none.
+  // The list for the current level shows while items match, while they
+  // load, or while an empty part can say there are none.
+  const visible = () =>
+    !!levels.current() &&
+    !isFreeText() &&
+    (hasEntries() || loadingStatus() === "loading" || store.get().hasEmpty)
+
   function settle(reason: TriggerMenuOpenChangeReason, event?: Event) {
-    const visible =
-      !!levels.current() &&
-      !isFreeText() &&
-      (hasEntries() || loadingStatus() === "loading" || store.get().hasEmpty)
-    if (visible) {
+    if (visible()) {
       show(reason, event)
     } else {
       hide(reason, event)
@@ -595,6 +596,10 @@ function triggerMenuApiBody(
     }
     lastMounts = mounts
     lastItems = items
+    // Rows can unmount after the input that filtered them, like React's children.
+    if (store.get().open && !visible()) {
+      return settle("input-change")
+    }
     settleHighlight()
   })
 
