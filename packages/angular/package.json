@@ -1,0 +1,86 @@
+{
+  "name": "@ui-sdk/angular",
+  "version": "0.0.0",
+  "private": true,
+  "description": "UI SDK for Angular.",
+  "keywords": [
+    "angular",
+    "ui",
+    "ui-sdk",
+    "shadcn",
+    "behaviors",
+    "accessibility",
+    "a11y",
+    "aria",
+    "keyboard",
+    "focus",
+    "headless",
+    "unstyled",
+    "components",
+    "agents"
+  ],
+  "type": "module",
+  "license": "Apache-2.0",
+  "homepage": "https://ui-sdk.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vercel-labs/ui.git",
+    "directory": "packages/angular"
+  },
+  "bugs": "https://github.com/vercel-labs/ui/issues",
+  "exports": {
+    "./accordion": "./src/accordion.ts",
+    "./collapsible": "./src/collapsible.ts",
+    "./dialog": "./src/dialog.ts",
+    "./primitive": "./src/primitive.ts",
+    "./tabs": "./src/tabs.ts"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "exports": {
+      "./accordion": {
+        "types": "./dist/accordion.d.ts",
+        "default": "./dist/accordion.js"
+      },
+      "./collapsible": {
+        "types": "./dist/collapsible.d.ts",
+        "default": "./dist/collapsible.js"
+      },
+      "./dialog": {
+        "types": "./dist/dialog.d.ts",
+        "default": "./dist/dialog.js"
+      },
+      "./primitive": {
+        "types": "./dist/primitive.d.ts",
+        "default": "./dist/primitive.js"
+      },
+      "./tabs": {
+        "types": "./dist/tabs.d.ts",
+        "default": "./dist/tabs.js"
+      }
+    }
+  },
+  "scripts": {
+    "prepack": "cp ../../LICENSE LICENSE"
+  },
+  "peerDependencies": {
+    "@angular/core": "^21.0.0 || ^22.0.0",
+    "@ui-sdk/core": "workspace:^"
+  },
+  "devDependencies": {
+    "@angular/common": "^21.2.26",
+    "@angular/compiler": "^21.2.26",
+    "@angular/core": "^21.2.26",
+    "@angular/platform-browser": "^21.2.26",
+    "@angular/platform-server": "^21.2.26",
+    "@types/node": "^24.0.0",
+    "@ui-sdk/core": "workspace:*",
+    "jsdom": "^30.1.2",
+    "rxjs": "^7.8.2",
+    "typescript": "catalog:",
+    "vitest": "^5.0.3"
+  }
+}
