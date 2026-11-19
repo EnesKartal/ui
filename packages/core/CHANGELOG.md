@@ -1,5 +1,13 @@
 # @ui-sdk/core
 
+## 0.1.0-beta.14
+
+### Patch Changes
+
+- 8573f8f: `agent.act` takes an optional `{ signal }`. When it aborts, a step waiting on `allow` fails as cancelled and later steps don't run, so a chat's stop button can end a confirm nobody will answer.
+- b4dbe88: Inside a `Field`, `ComboboxChips` takes the name the field's label gives the input, so screen readers no longer announce an unnamed toolbar.
+- ef6d8ce: A `ToastRegion` without `toaster` no longer throws "Expected a toaster from createToaster()" when a second copy of `@ui-sdk/core` runs in the page, such as after upgrading during `next dev`.
+
 ## 0.1.0-beta.13
 
 ### Patch Changes
