@@ -64,7 +64,7 @@ class Example {
     const names = this.days
       .filter((day) => change.value.includes(day.value))
       .map((day) => day.label)
-    this.log(`${names.join(", ") || "No this.days"} (${change.reason})`)
+    this.log(`${names.join(", ") || "No days"} (${change.reason})`)
   }
 }
 

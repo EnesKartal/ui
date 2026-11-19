@@ -57,7 +57,7 @@ export { Example }
 
 Wrap the input in a [Field](./field) to give it a visible label, a description and errors. The field also supplies its `name` when the input has none.
 
-```html
+```angular-html
 <div uiField name="username">
   <label uiFieldLabel>Username</label>
   <input uiInput autocomplete="username" />
@@ -69,7 +69,7 @@ Wrap the input in a [Field](./field) to give it a visible label, a description a
 
 Set `disabled` on the input or its field to prevent editing and leave it out of the tab order and the submitted values. A `readOnly` input can still be focused, selected and submitted.
 
-```html
+```angular-html
 <div uiField disabled>
   <label uiFieldLabel>Email</label>
   <input uiInput type="email" defaultValue="hollis@example.com" />
@@ -85,7 +85,7 @@ Set `disabled` on the input or its field to prevent editing and leave it out of 
 
 Use native constraints such as `required`, `type="email"` and `pattern`. The field shows its error after a submit attempt and updates it as the value changes. Set `invalid` on the field for an error your app decides; the input gets `aria-invalid`. [Field](./field#validation) covers the error parts and their matches.
 
-```html
+```angular-html
 <div uiField name="email" [invalid]="emailTaken ? true : undefined">
   <label uiFieldLabel>Email</label>
   <input uiInput type="email" required />
@@ -98,7 +98,7 @@ Use native constraints such as `required`, `type="email"` and `pattern`. The fie
 
 Place text or buttons around an input with `uiInputGroup`. Pressing the group's text focuses the input. The text is display content, not part of the submitted value.
 
-```html
+```angular-html
 <div uiInputGroup>
   <span>https://</span>
   <input uiInput aria-label="Website" placeholder="example" />
@@ -110,7 +110,7 @@ Place text or buttons around an input with `uiInputGroup`. Pressing the group's 
 
 `uiInputClear` shows while the input has text it can clear. Pressing it empties the value, reports `clear-press` and returns focus to the input. Controlled state and native input listeners receive the change too.
 
-```html
+```angular-html
 <div uiInputGroup>
   <input uiInput type="search" aria-label="Search people" />
   <button *uiInputClear aria-label="Clear search">

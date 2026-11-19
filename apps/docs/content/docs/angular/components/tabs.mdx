@@ -153,7 +153,7 @@ Put decorative icons in an element with `uiTabsTabIcon` so they stay out of the 
 
 Set `activation="manual"` when opening a panel takes time, such as a view that fetches data. Arrow keys move focus; Enter or Space selects the focused tab.
 
-```html
+```angular-html
 <div uiTabs activation="manual"></div>
 ```
 
@@ -250,7 +250,7 @@ Use `[(value)]` to own the selected tab. [State and Events](../state-and-events)
 
 Put `uiTabsTab` on a link when selection should navigate. It keeps its tab role; arrow keys follow the link when they select it. Modified clicks, such as Cmd-click, keep their normal browser behavior without selecting the tab.
 
-```html
+```angular-html
 <a uiTabsTab value="activity" href="#activity">Activity</a>
 ```
 

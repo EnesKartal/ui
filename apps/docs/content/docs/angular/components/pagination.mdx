@@ -110,13 +110,13 @@ A page past the end, like after the count shrinks, reads as the last page.
 
 With only a few pages, the range has no gaps, so you can write the links out and leave the steps off.
 
-```html
+```angular-html
 <nav uiPagination aria-label="Pagination" [pageCount]="5">
   <ul uiPaginationList>
     @for (page of [1, 2, 3, 4, 5]; track page) {
-    <li uiPaginationItem>
-      <a uiPaginationLink [page]="page"></a>
-    </li>
+      <li uiPaginationItem>
+        <a uiPaginationLink [page]="page"></a>
+      </li>
     }
   </ul>
 </nav>
@@ -238,7 +238,7 @@ Every change carries a [reason](#reasons): `item-press` for a page, `previous-pr
 
 `defaultPage` is the page it starts on, when uncontrolled. It's 1 by default.
 
-```html
+```angular-html
 <nav uiPagination aria-label="Pagination" [pageCount]="10" [defaultPage]="5">
   ...
 </nav>
@@ -248,7 +248,7 @@ Every change carries a [reason](#reasons): `item-press` for a page, `previous-pr
 
 `siblings` is how many pages show on each side of the current one, 1 by default. Near an end, the window slides over instead of shrinking, keeping the range length stable. A gap of one page shows that page instead of an ellipsis.
 
-```html
+```angular-html
 <nav
   uiPagination
   aria-label="Pagination"
@@ -264,7 +264,7 @@ Every change carries a [reason](#reasons): `item-press` for a page, `previous-pr
 
 `boundaries` is how many pages always show at each end, 1 by default.
 
-```html
+```angular-html
 <nav
   uiPagination
   aria-label="Pagination"

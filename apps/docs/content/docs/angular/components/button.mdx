@@ -38,7 +38,7 @@ export class Save {
 
 Pass a Promise to `$event.waitUntil()` to keep the button pending until it settles. The button keeps focus and ignores further presses while it waits.
 
-```html
+```angular-html
 <button
   uiButton
   (action)="$event.waitUntil(save())"
@@ -68,7 +68,7 @@ To change what the button shows while it waits, mark content with `data-show="id
 }
 ```
 
-```html
+```angular-html
 <button uiButton (action)="$event.waitUntil(save())">
   <svg lucideArrowDownToLine class="in-data-pending:hidden"></svg>
   <svg lucideLoaderCircle class="not-in-data-pending:hidden"></svg>
@@ -85,7 +85,7 @@ To change what the button shows while it waits, mark content with `data-show="id
 
 Keep the label and change only the visual, as above. If the text has to change too, swap it the same way, without an `aria-label`. [Pending Buttons](#pending-buttons) explains why:
 
-```html
+```angular-html
 <button uiButton (action)="$event.waitUntil(save())">
   <span data-show="idle">Save</span>
   <span data-show="pending">Saving…</span>
@@ -140,7 +140,7 @@ export class Save {
 
 Set `disabled` to prevent presses and remove the button from the tab order. A disabled `<fieldset>` around the button disables it too.
 
-```html
+```angular-html
 <button uiButton disabled>Disabled</button>
 ```
 
@@ -155,7 +155,7 @@ Add `focusableWhenDisabled` when people should still be able to focus a disabled
 
 Use `aria-describedby` to explain why the action is unavailable:
 
-```html
+```angular-html
 <button uiButton disabled focusableWhenDisabled aria-describedby="publish-hint">
   Publish
 </button>
@@ -171,7 +171,7 @@ Use `aria-describedby` to explain why the action is unavailable:
 
 Put `uiButton` on an `<a>`. It keeps its `href` and link semantics, including opening in a new tab. A disabled link cannot navigate and leaves the tab order.
 
-```html
+```angular-html
 <a uiButton href="/docs/angular">Get started</a>
 ```
 
@@ -186,7 +186,7 @@ For your own components, see [Parts and Composition](/docs/angular/parts-and-com
 
 Set `type="submit"` to submit a form or `type="reset"` to restore its default values. The default, `type="button"`, does neither.
 
-```html
+```angular-html
 <button uiButton type="submit">Subscribe</button>
 <button uiButton type="reset">Reset</button>
 ```
@@ -247,7 +247,7 @@ While its action runs, the button tells assistive technology it's busy, so you d
 
 To show progress, keep the label and change only the visual, like a spinner. Changing the text renames the button while it has focus: screen readers don't reliably announce a new name on the focused element, so the change mostly helps sighted users, and the button's width shifts as the text changes length. The announcement already tells everyone it's working.
 
-```html
+```angular-html
 <button
   uiButton
   (action)="$event.waitUntil(save())"
@@ -259,7 +259,7 @@ To show progress, keep the label and change only the visual, like a spinner. Cha
 </button>
 ```
 
-```html
+```angular-html
 <button uiButton (click)="save()" aria-label="Save">
   {{ saving() ? "Saving…" : "Save" }}
   <span aria-live="polite">{{ saving() ? "Saving" : "" }}</span>

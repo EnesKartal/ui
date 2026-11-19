@@ -108,7 +108,7 @@ These are the same parts the ready-made Avatar is made of, with your names. See 
 
 Set `delay` on the fallback to wait before showing it. This avoids flashing initials when an image loads quickly. Without a delay, the fallback appears immediately, including on the server.
 
-```html
+```angular-html
 <span uiAvatar>
   <img uiAvatarImage src="https://github.com/shadcn.png" alt="shadcn" />
   <span *uiAvatarFallback="{ delay: 600 }">CN</span>
@@ -119,7 +119,7 @@ Set `delay` on the fallback to wait before showing it. This avoids flashing init
 
 Pass image attributes such as `srcset`, `crossorigin`, and `referrerpolicy` to the image. They work on the same `img` the browser loads. For avatars farther down a page, use `loading="lazy"`.
 
-```html
+```angular-html
 <span uiAvatar>
   <img
     uiAvatarImage
@@ -143,7 +143,7 @@ Pass image attributes such as `srcset`, `crossorigin`, and `referrerpolicy` to t
 
 Use a button when clicking an avatar performs an action. Give it an accessible name that stays available while the image loads.
 
-```html
+```angular-html
 <button
   uiAvatar
   (click)="openProfile($event)"
@@ -199,7 +199,7 @@ When you replace a loaded image, the browser keeps it visible while the next sou
 
 Read a part's state from a template reference, as [Parts and Composition](../parts-and-composition) shows. Every part's state has the loading status, so the fallback can say something different when the image fails:
 
-```html
+```angular-html
 <span uiAvatar #avatar="uiAvatar">
   <img uiAvatarImage [src]="user.image" [alt]="user.name" />
   <span *uiAvatarFallback>

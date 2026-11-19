@@ -63,7 +63,7 @@ The label names the control, and the description and any error that shows descri
 
 Group related fields in a [field set](#field-sets):
 
-```html
+```angular-html
 <fieldset uiFieldSet>
   <legend uiFieldLegend></legend>
   <p uiFieldDescription></p>
@@ -78,7 +78,7 @@ Group related fields in a [field set](#field-sets):
 
 Use an [Input](./input) for a line of text and a [Textarea](./textarea) for more:
 
-```html
+```angular-html
 <div uiField>
   <label uiFieldLabel>Feedback</label>
   <textarea uiTextarea name="feedback"></textarea>
@@ -87,7 +87,7 @@ Use an [Input](./input) for a line of text and a [Textarea](./textarea) for more
 
 For a control we don't ship, like a native `<select>`, use `uiFieldControl`. Put it on the native element, and it connects it to the field the same way. An [agent](/docs/agents) sees only our components, so it can't fill a `uiFieldControl`: use ours where there is one.
 
-```html
+```angular-html
 <div uiField>
   <label uiFieldLabel>Department</label>
   <select uiFieldControl name="department">
@@ -99,7 +99,7 @@ For a control we don't ship, like a native `<select>`, use `uiFieldControl`. Put
 
 A [Checkbox](./checkbox), [Switch](./switch) or [Radio Group](./radio) inside a field uses the field's label and description. Pressing the label toggles a checkbox or switch. A radio group takes the field's label as its name, and each radio keeps a label of its own:
 
-```html
+```angular-html
 <div uiField>
   <button uiSwitch name="mfa"></button>
   <label uiFieldLabel>Two-factor authentication</label>
@@ -138,13 +138,13 @@ Pass `invalid` when your server or form library supplies an error. `true` shows 
 
 Give this error its own text and set `match` to `true`. Named matches such as `valueMissing` still refer to native validation. `[invalid]="false"` hides the field's invalid state, but does not make an invalid native control pass validation.
 
-```html
+```angular-html
 <div uiField name="email" [invalid]="serverError ? true : undefined">
   <label uiFieldLabel>Email</label>
-  <input uiInput type="email" required (valueChange)="(serverError = null)" />
+  <input uiInput type="email" required (valueChange)="serverError = null" />
   <div *uiFieldError="'valueMissing'">Enter your email address.</div>
   @if (serverError) {
-  <div *uiFieldError="true">{{ serverError }}</div>
+    <div *uiFieldError="true">{{ serverError }}</div>
   }
 </div>
 ```
@@ -159,7 +159,7 @@ A disabled field disables its control and marks every part with `data-disabled`,
 
 Keep the text in state and show its length in the description. Set `maxlength` on the control to enforce the limit.
 
-```html
+```angular-html
 <div uiField>
   <label uiFieldLabel>Bio</label>
   <textarea uiTextarea [(value)]="bio" maxlength="280"></textarea>
@@ -188,7 +188,7 @@ A `uiFieldDescription` right inside the set, outside any `uiField`, describes th
 
 Disabling the set disables its controls and nested field sets. The form leaves their values out of submissions.
 
-```html
+```angular-html
 <fieldset uiFieldSet [disabled]="sameAsShipping">
   <legend uiFieldLegend>Billing address</legend>
   <div uiField name="billing-street">
@@ -202,7 +202,7 @@ Disabling the set disables its controls and nested field sets. The form leaves t
 
 The legend names a [checkbox group](./checkbox#group) or a [radio group](./radio) inside the set, so the group needs no label of its own.
 
-```html
+```angular-html
 <fieldset uiFieldSet>
   <legend uiFieldLegend>Notifications</legend>
   <div uiCheckboxGroup name="notify" [defaultValue]="['mentions']">
@@ -222,13 +222,16 @@ The legend names a [checkbox group](./checkbox#group) or a [radio group](./radio
 
 Each directive goes on an element you write, like `uiFieldControl` on a `<select>`. Read the field's state from a template reference:
 
-```html
+```angular-html
 <div uiField #username="uiField">
   <label uiFieldLabel>Username</label>
   <input uiInput pattern="[a-z0-9]+" />
   <p uiFieldDescription>
-    {{ username.state().invalid ? "Use letters and numbers only." : "Letters and
-    numbers." }}
+    {{
+      username.state().invalid
+        ? "Use letters and numbers only."
+        : "Letters and numbers."
+    }}
   </p>
 </div>
 ```
@@ -253,7 +256,7 @@ export class PhoneInput {
 }
 ```
 
-```html
+```angular-html
 <div uiField name="phone">
   <label uiFieldLabel>Phone</label>
   <input appPhoneInput required />

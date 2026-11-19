@@ -127,7 +127,7 @@ class Example {
     setTimeout(() => {
       this.count.update((v) => v + this.pageSize)
       this.busy.set(false)
-      this.log(`Loaded ${this.pageSize} more this.updates`)
+      this.log(`Loaded ${this.pageSize} more updates`)
     }, 600)
   }
 }

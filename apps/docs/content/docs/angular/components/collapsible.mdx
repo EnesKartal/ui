@@ -106,7 +106,7 @@ Connect the other slots the same way, each with `usePart`. Each part keeps the b
 
 Set `disabled` on the root to stop its trigger from opening or closing the panel. The trigger stays in the tab order and reports `aria-disabled="true"`. A disabled `<fieldset>` around the collapsible disables it too.
 
-```html
+```angular-html
 <div uiCollapsible disabled>
   <button uiCollapsibleTrigger>Gift options</button>
   <div uiCollapsiblePanel>Add a gift message and wrapping.</div>
@@ -162,7 +162,7 @@ Animate the measured `--collapsible-panel-height` between zero and the content's
 }
 ```
 
-```html
+```angular-html
 <div
   uiCollapsiblePanel
   class="h-(--collapsible-panel-height) overflow-hidden transition-[height] duration-200 ease-out data-starting-style:h-0 data-ending-style:h-0"

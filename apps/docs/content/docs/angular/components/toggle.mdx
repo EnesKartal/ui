@@ -90,7 +90,7 @@ Without `multiple`, pressing a toggle unpresses the others. Pressing the pressed
 
 Put an icon beside the label with `uiToggleIcon`. The icon is hidden from screen readers, so the text alone names the button.
 
-```html
+```angular-html
 <button uiToggle>
   <span uiToggleIcon>
     <svg lucidePin></svg>
@@ -103,13 +103,13 @@ Put an icon beside the label with `uiToggleIcon`. The icon is hidden from screen
 
 Set `disabled` on a toggle or a group to prevent presses. A disabled toggle can still start pressed, and a disabled `<fieldset>` around it disables it too.
 
-```html
+```angular-html
 <button uiToggle disabled defaultPressed>Pin</button>
 ```
 
 A disabled toggle on its own leaves the tab order. In a group, disabled toggles stay reachable with the arrow keys and report `aria-disabled`, but ignore presses.
 
-```html
+```angular-html
 <div uiToggleGroup multiple aria-label="Text formatting">
   <button uiToggle value="bold">Bold</button>
   <button uiToggle value="italic">Italic</button>
@@ -121,7 +121,7 @@ A disabled toggle on its own leaves the tab order. In a group, disabled toggles 
 
 Set `focusableWhenDisabled` to keep a disabled toggle focusable. It uses `aria-disabled` and still ignores presses. Use `aria-describedby` to explain why it's unavailable:
 
-```html
+```angular-html
 <button uiToggle disabled focusableWhenDisabled aria-describedby="pin-hint">
   Pin
 </button>
@@ -215,7 +215,7 @@ See [State and Events](../state-and-events) for controlled state, cancellation a
 
 Set `orientation="vertical"` to move with Up and Down instead of Left and Right. The group and its toggles get `data-orientation`.
 
-```html
+```angular-html
 <div uiToggleGroup orientation="vertical" aria-label="Tool">...</div>
 ```
 
@@ -223,7 +223,7 @@ Set `orientation="vertical"` to move with Up and Down instead of Left and Right.
 
 Arrow keys wrap from the last toggle to the first. Set `loop` to `false` to stop at the ends.
 
-```html
+```angular-html
 <div uiToggleGroup multiple [loop]="false" aria-label="Text formatting">
   ...
 </div>
