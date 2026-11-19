@@ -66,3 +66,27 @@ test("the menu closes when its last row unmounts", async () => {
   await tick()
   expect(open()).toBe(false)
 })
+
+test("an empty part that rebinds in the same commit keeps the menu open", async () => {
+  const { editor, part, open } = setup()
+  const removeEmpty = part("empty")
+  await tick()
+  editor.type("@zzz")
+  await tick()
+  removeEmpty()
+  part("empty")
+  await tick()
+  expect(open()).toBe(true)
+})
+
+test("an empty part that mounts as the last row unmounts keeps the menu open", async () => {
+  const { editor, part, open } = setup()
+  const removeRow = part("item", { value: "alice", label: "Alice" })
+  await tick()
+  editor.type("@a")
+  await tick()
+  removeRow()
+  part("empty")
+  await tick()
+  expect(open()).toBe(true)
+})
