@@ -146,7 +146,7 @@ describe("dialog", () => {
     expect(save.getAttribute("aria-busy")).toBe("true")
     expect(save.textContent?.trim()).toBe("Saving")
     finish()
-    await instance.wait
+    await new Promise((resolve) => setTimeout(resolve))
     await settle()
     expect(instance.open()).toBe(false)
     expect(instance.changes).toEqual(["action:false:save"])

@@ -122,10 +122,28 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
     inject<ElementRef<HTMLElement | Comment>>(ElementRef).nativeElement
   const template = inject(TemplateRef, { optional: true })
   const container = template ? inject(ViewContainerRef) : undefined
-  const channel = `render:${inject(Ids).next()}`
-  const part = computed(() => owner.instance.part(slot, props()))
+  const own = inject(Ids).next()
+  const channel = `render:${own}`
+  // Core keeps one part per key and gives it the new props, so the same
+  // object comes back and only this computed can say that it changed.
+  const part = computed(
+    () => {
+      const given = props() as PropsOf<P, S> & { id?: string; value?: unknown }
+      // Two parts of one slot, like a dialog's Close buttons, each need a key.
+      return owner.instance.part(
+        slot,
+        given.value === undefined && given.id === undefined
+          ? { ...given, id: own }
+          : given
+      )
+    },
+    { equal: () => false }
+  )
+  const keyed = computed(() => part())
+  const selection = computed(() => selectedKeys(part()))
   const element = signal(template ? null : (host as HTMLElement))
   const changes = signal(0)
+  const stateChanges = signal(0)
   // What `let` reads in the `*` form, like `*uiDialogContent="let dialog"`.
   const context = {
     get $implicit() {
@@ -202,10 +220,12 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
   }
 
   effect((onCleanup) => {
-    const current = part()
-    selectedKeys(current)
+    const current = keyed()
+    selection()
     const unsubscribe = untracked(() =>
       subscribe(current, (liveOnly: boolean) => {
+        // A template may read state that only live attributes show, like `pending`.
+        stateChanges.update((count) => count + 1)
         if (liveOnly && !conditional(current)) {
           return
         }
@@ -249,13 +269,13 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
 
   const state: Signal<StateOf<P, S>> = computed(
     () => {
-      changes()
+      stateChanges()
       return partState(part()) as StateOf<P, S>
     },
     { equal: (a, b) => sameState(a as object, b as object) }
   )
   const present = computed(() => {
-    changes()
+    stateChanges()
     return isPresent(part())
   })
   return { present, state }

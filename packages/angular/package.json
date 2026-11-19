@@ -30,10 +30,20 @@
   "bugs": "https://github.com/vercel-labs/ui/issues",
   "exports": {
     "./accordion": "./src/accordion.ts",
+    "./avatar": "./src/avatar.ts",
+    "./button": "./src/button.ts",
     "./collapsible": "./src/collapsible.ts",
     "./dialog": "./src/dialog.ts",
+    "./label": "./src/label.ts",
+    "./meter": "./src/meter.ts",
+    "./pagination": "./src/pagination.ts",
     "./primitive": "./src/primitive.ts",
-    "./tabs": "./src/tabs.ts"
+    "./progress": "./src/progress.ts",
+    "./separator": "./src/separator.ts",
+    "./tabs": "./src/tabs.ts",
+    "./timeline": "./src/timeline.ts",
+    "./toggle": "./src/toggle.ts",
+    "./toolbar": "./src/toolbar.ts"
   },
   "sideEffects": false,
   "files": [
@@ -45,6 +55,14 @@
         "types": "./dist/accordion.d.ts",
         "default": "./dist/accordion.js"
       },
+      "./avatar": {
+        "types": "./dist/avatar.d.ts",
+        "default": "./dist/avatar.js"
+      },
+      "./button": {
+        "types": "./dist/button.d.ts",
+        "default": "./dist/button.js"
+      },
       "./collapsible": {
         "types": "./dist/collapsible.d.ts",
         "default": "./dist/collapsible.js"
@@ -53,13 +71,45 @@
         "types": "./dist/dialog.d.ts",
         "default": "./dist/dialog.js"
       },
+      "./label": {
+        "types": "./dist/label.d.ts",
+        "default": "./dist/label.js"
+      },
+      "./meter": {
+        "types": "./dist/meter.d.ts",
+        "default": "./dist/meter.js"
+      },
+      "./pagination": {
+        "types": "./dist/pagination.d.ts",
+        "default": "./dist/pagination.js"
+      },
       "./primitive": {
         "types": "./dist/primitive.d.ts",
         "default": "./dist/primitive.js"
       },
+      "./progress": {
+        "types": "./dist/progress.d.ts",
+        "default": "./dist/progress.js"
+      },
+      "./separator": {
+        "types": "./dist/separator.d.ts",
+        "default": "./dist/separator.js"
+      },
       "./tabs": {
         "types": "./dist/tabs.d.ts",
         "default": "./dist/tabs.js"
+      },
+      "./timeline": {
+        "types": "./dist/timeline.d.ts",
+        "default": "./dist/timeline.js"
+      },
+      "./toggle": {
+        "types": "./dist/toggle.d.ts",
+        "default": "./dist/toggle.js"
+      },
+      "./toolbar": {
+        "types": "./dist/toolbar.d.ts",
+        "default": "./dist/toolbar.js"
       }
     }
   },
