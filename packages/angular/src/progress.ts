@@ -1,6 +1,7 @@
 import { Directive, inject, input, type InputSignal } from "@angular/core"
 import { progress, type ProgressOptions } from "@ui-sdk/core/progress"
 import { optionalBoolean, optionalNumber } from "./inputs"
+import { useText } from "./text"
 import { usePart, usePrimitive } from "./use-primitive"
 
 /**
@@ -79,6 +80,10 @@ class ProgressLabel {
 class ProgressValue {
   /** The part's state, as a signal. */
   readonly state = usePart(inject(Progress).handle, "value").state
+
+  constructor() {
+    useText(() => this.state().text)
+  }
 }
 
 export type {

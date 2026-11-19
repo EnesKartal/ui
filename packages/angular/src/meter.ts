@@ -7,6 +7,7 @@ import {
 } from "@angular/core"
 import { meter, type MeterOptions } from "@ui-sdk/core/meter"
 import { optionalBoolean, optionalNumber } from "./inputs"
+import { useText } from "./text"
 import { usePart, usePrimitive } from "./use-primitive"
 
 /**
@@ -81,6 +82,10 @@ class MeterLabel {
 class MeterValue {
   /** The part's state, as a signal. */
   readonly state = usePart(inject(Meter).handle, "value").state
+
+  constructor() {
+    useText(() => this.state().text)
+  }
 }
 
 export type {

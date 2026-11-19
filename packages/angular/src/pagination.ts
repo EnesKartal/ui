@@ -9,6 +9,7 @@ import {
 import { pagination, type PaginationOptions } from "@ui-sdk/core/pagination"
 import { optionalBoolean, optionalNumber } from "./inputs"
 import { emitChange } from "./outputs"
+import { useText } from "./text"
 import { usePart, usePrimitive } from "./use-primitive"
 
 /**
@@ -106,6 +107,10 @@ class PaginationLink {
   readonly state = usePart(inject(Pagination).handle, "link", () => ({
     page: this.page(),
   })).state
+
+  constructor() {
+    useText(() => String(this.page()))
+  }
 }
 
 /**
@@ -162,6 +167,10 @@ class PaginationLast {
 class PaginationEllipsis {
   /** The part's state, as a signal. */
   readonly state = usePart(inject(Pagination).handle, "ellipsis").state
+
+  constructor() {
+    useText(() => "…")
+  }
 }
 
 export {

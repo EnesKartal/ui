@@ -32,11 +32,9 @@ import { mount } from "./mount"
         @for (item of list.state().items; track item) {
           <li uiPaginationItem>
             @if (item === "ellipsis-start" || item === "ellipsis-end") {
-              <span uiPaginationEllipsis>…</span>
+              <span uiPaginationEllipsis class="gap"></span>
             } @else {
-              <button uiPaginationLink class="page" [page]="item">
-                {{ item }}
-              </button>
+              <button uiPaginationLink class="page" [page]="item"></button>
             }
           </li>
         }
@@ -61,6 +59,7 @@ describe("pagination", () => {
     const { host } = await mount(Page)
     expect(pages(host)).toEqual(["1", "2", "3", "4", "5", "20"])
     expect(current(host)).toBe("1")
+    expect(host.querySelector(".gap")?.textContent).toBe("…")
     expect(host.querySelectorAll("li[role=listitem]").length).toBe(9)
   })
 
