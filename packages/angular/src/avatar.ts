@@ -1,6 +1,10 @@
 import { Directive, inject, input, output } from "@angular/core"
-import { avatar, type AvatarOptions } from "@ui-sdk/core/avatar"
-import { optionalBoolean, optionalNumber } from "./inputs"
+import {
+  avatar,
+  type AvatarFallbackProps,
+  type AvatarOptions,
+} from "@ui-sdk/core/avatar"
+import { optionalBoolean, optionalNumber, starInputs, withStar } from "./inputs"
 import { emitChange } from "./outputs"
 import { usePart, usePrimitive } from "./use-primitive"
 
@@ -57,11 +61,15 @@ class AvatarImage {
 class AvatarFallback {
   /** How long to wait, in milliseconds, before showing the fallback, so a fast image appears without the fallback flashing first. Without one, the fallback shows at once, server markup included. */
   readonly delay = input(undefined, { transform: optionalNumber })
+  /** The inputs as one object, for the `*` form, which leaves other attributes on the element inside: `*uiAvatarFallback="{ delay: 600 }"`. */
+  readonly uiAvatarFallback = input(undefined, {
+    transform: starInputs<AvatarFallbackProps>,
+  })
 
   /** The part's state, as a signal. */
-  readonly state = usePart(inject(Avatar).handle, "fallback", () => ({
-    delay: this.delay(),
-  })).state
+  readonly state = usePart(inject(Avatar).handle, "fallback", () =>
+    withStar(this.uiAvatarFallback(), { delay: this.delay() })
+  ).state
 }
 
 export type {

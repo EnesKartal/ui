@@ -15,4 +15,27 @@ const nullableNumber = (value: unknown) =>
     ? (value as null | undefined)
     : numberAttribute(value)
 
-export { nullableNumber, optionalBoolean, optionalNumber }
+// The `*` form leaves a part's other attributes on the element inside its
+// template, where they aren't inputs. So it takes them as one object, like
+// `*uiPopoverContent="{ side: 'bottom' }"`. A bare attribute gives "".
+const starInputs = <Props>(value: Partial<Props> | "" | undefined) =>
+  value || undefined
+
+// A part's props: what its own inputs set, over what the `*` form gave.
+function withStar<Props extends object>(
+  star: Partial<Props> | undefined,
+  own: Props
+) {
+  if (!star) {
+    return own
+  }
+  const props = { ...star } as Props
+  for (const key in own) {
+    if (own[key] !== undefined) {
+      props[key] = own[key]
+    }
+  }
+  return props
+}
+
+export { nullableNumber, optionalBoolean, optionalNumber, starInputs, withStar }

@@ -73,60 +73,61 @@ class Page {
   }
 }
 
-const press = (host: HTMLElement, id: string) =>
-  host.querySelector<HTMLElement>(`#${id}`)!.click()
+// Without a top layer, as in jsdom, an open dialog renders at the end of the body.
+const page = document
+const press = (id: string) => page.querySelector<HTMLElement>(`#${id}`)!.click()
 
 describe("dialog", () => {
   test("the trigger opens it, named by its title and described by its description", async () => {
-    const { host, instance, settle } = await mount(Page)
-    expect(host.querySelector("#content")).toBeNull()
-    press(host, "trigger")
+    const { instance, settle } = await mount(Page)
+    expect(page.querySelector("#content")).toBeNull()
+    press("trigger")
     await settle()
-    const content = host.querySelector("#content")!
+    const content = page.querySelector("#content")!
     expect(instance.open()).toBe(true)
     expect(instance.changes).toEqual(["trigger-press:true:"])
     expect(content.getAttribute("role")).toBe("dialog")
     expect(content.getAttribute("aria-labelledby")).toBe(
-      host.querySelector("h2")!.id
+      page.querySelector("h2")!.id
     )
     expect(content.getAttribute("aria-describedby")).toBe(
-      host.querySelector("p")!.id
+      page.querySelector("p")!.id
     )
   })
 
   test("let reads the content's state, like the trigger's payload", async () => {
-    const { host, settle } = await mount(Page)
-    press(host, "trigger")
+    const { settle } = await mount(Page)
+    press("trigger")
     await settle()
-    expect(host.querySelector("p")!.textContent).toBe("Editing row 7")
+    expect(page.querySelector("p")!.textContent).toBe("Editing row 7")
   })
 
   test("a close press closes it and reports its value", async () => {
-    const { host, instance, settle } = await mount(Page)
+    const { instance, settle } = await mount(Page)
     instance.open.set(true)
     await settle()
-    press(host, "close")
+    press("close")
     await settle()
     expect(instance.open()).toBe(false)
     expect(instance.changes).toEqual(["close-press:false:cancel"])
-    expect(host.querySelector("#content")).toBeNull()
+    expect(page.querySelector("#content")).toBeNull()
     expect(instance.completed.at(-1)).toBe(false)
   })
 
   test("cancel() in (beforeOpenChange) keeps it closed", async () => {
-    const { host, instance, settle } = await mount(Page)
+    const { instance, settle } = await mount(Page)
     instance.locked = true
-    press(host, "trigger")
+    press("trigger")
     await settle()
     expect(instance.open()).toBe(false)
-    expect(host.querySelector("#content")).toBeNull()
+    expect(page.querySelector("#content")).toBeNull()
   })
 
   test("an (action) listener runs before the close, with reason action", async () => {
-    const { host, instance, settle } = await mount(Page)
+    const { instance, settle } = await mount(Page)
     instance.open.set(true)
     await settle()
-    press(host, "save")
+    press("save")
     await settle()
     expect(instance.sources).toEqual(["object"])
     expect(instance.changes).toEqual(["action:false:save"])
@@ -134,14 +135,14 @@ describe("dialog", () => {
   })
 
   test("waitUntil() keeps it open and the button pending until the promise settles", async () => {
-    const { host, instance, settle } = await mount(Page)
+    const { instance, settle } = await mount(Page)
     let finish = () => {}
     instance.wait = new Promise<void>((resolve) => (finish = resolve))
     instance.open.set(true)
     await settle()
-    press(host, "save")
+    press("save")
     await settle()
-    const save = host.querySelector("#save")!
+    const save = page.querySelector("#save")!
     expect(instance.open()).toBe(true)
     expect(save.getAttribute("aria-busy")).toBe("true")
     expect(save.textContent?.trim()).toBe("Saving")

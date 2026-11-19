@@ -30,14 +30,17 @@
   "bugs": "https://github.com/vercel-labs/ui/issues",
   "exports": {
     "./accordion": "./src/accordion.ts",
+    "./alert-dialog": "./src/alert-dialog.ts",
     "./avatar": "./src/avatar.ts",
     "./button": "./src/button.ts",
     "./checkbox": "./src/checkbox.ts",
     "./collapsible": "./src/collapsible.ts",
     "./date-input": "./src/date-input.ts",
     "./dialog": "./src/dialog.ts",
+    "./drawer": "./src/drawer.ts",
     "./field": "./src/field.ts",
     "./file-input": "./src/file-input.ts",
+    "./hover-card": "./src/hover-card.ts",
     "./input": "./src/input.ts",
     "./label": "./src/label.ts",
     "./meter": "./src/meter.ts",
@@ -45,6 +48,7 @@
     "./otp-input": "./src/otp-input.ts",
     "./pagination": "./src/pagination.ts",
     "./password-input": "./src/password-input.ts",
+    "./popover": "./src/popover.ts",
     "./primitive": "./src/primitive.ts",
     "./progress": "./src/progress.ts",
     "./radio": "./src/radio.ts",
@@ -58,7 +62,8 @@
     "./time-input": "./src/time-input.ts",
     "./timeline": "./src/timeline.ts",
     "./toggle": "./src/toggle.ts",
-    "./toolbar": "./src/toolbar.ts"
+    "./toolbar": "./src/toolbar.ts",
+    "./tooltip": "./src/tooltip.ts"
   },
   "sideEffects": false,
   "files": [
@@ -69,6 +74,10 @@
       "./accordion": {
         "types": "./dist/accordion.d.ts",
         "default": "./dist/accordion.js"
+      },
+      "./alert-dialog": {
+        "types": "./dist/alert-dialog.d.ts",
+        "default": "./dist/alert-dialog.js"
       },
       "./avatar": {
         "types": "./dist/avatar.d.ts",
@@ -94,6 +103,10 @@
         "types": "./dist/dialog.d.ts",
         "default": "./dist/dialog.js"
       },
+      "./drawer": {
+        "types": "./dist/drawer.d.ts",
+        "default": "./dist/drawer.js"
+      },
       "./field": {
         "types": "./dist/field.d.ts",
         "default": "./dist/field.js"
@@ -101,6 +114,10 @@
       "./file-input": {
         "types": "./dist/file-input.d.ts",
         "default": "./dist/file-input.js"
+      },
+      "./hover-card": {
+        "types": "./dist/hover-card.d.ts",
+        "default": "./dist/hover-card.js"
       },
       "./input": {
         "types": "./dist/input.d.ts",
@@ -129,6 +146,10 @@
       "./password-input": {
         "types": "./dist/password-input.d.ts",
         "default": "./dist/password-input.js"
+      },
+      "./popover": {
+        "types": "./dist/popover.d.ts",
+        "default": "./dist/popover.js"
       },
       "./primitive": {
         "types": "./dist/primitive.d.ts",
@@ -185,6 +206,10 @@
       "./toolbar": {
         "types": "./dist/toolbar.d.ts",
         "default": "./dist/toolbar.js"
+      },
+      "./tooltip": {
+        "types": "./dist/tooltip.d.ts",
+        "default": "./dist/tooltip.js"
       }
     }
   },

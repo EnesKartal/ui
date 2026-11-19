@@ -2,6 +2,12 @@
 import { Component } from "@angular/core"
 import { describe, expect, test } from "vitest"
 import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogTitle,
+} from "../src/alert-dialog"
+import {
+  createDialogController,
   Dialog,
   DialogBackdrop,
   DialogClose,
@@ -53,6 +59,33 @@ class Open {}
 })
 class Closed {}
 
+@Component({
+  selector: "test-root",
+  imports: [Dialog, DialogTrigger, DialogContent],
+  template: `
+    <button uiDialogTrigger [controller]="controller" disabled>Edit</button>
+    <ng-container uiDialog [controller]="controller">
+      <div *uiDialogContent>Editing</div>
+    </ng-container>
+  `,
+})
+class Outside {
+  readonly controller = createDialogController()
+}
+
+@Component({
+  selector: "test-root",
+  imports: [AlertDialog, AlertDialogContent, AlertDialogTitle],
+  template: `
+    <ng-container uiAlertDialog defaultOpen>
+      <div *uiAlertDialogContent class="content">
+        <h2 uiAlertDialogTitle>Delete it?</h2>
+      </div>
+    </ng-container>
+  `,
+})
+class Alert {}
+
 // Runs with no DOM globals: a read of window or document while rendering throws.
 describe("server rendering a dialog", () => {
   test("an open dialog renders named by its title", async () => {
@@ -73,5 +106,17 @@ describe("server rendering a dialog", () => {
     expect(html).toMatch(/<div[^>]*class="backdrop"[^>]*hidden=""/)
     expect(html).not.toContain("Lazy")
     expect(tagWith(html, "Open")).toContain('aria-haspopup="dialog"')
+  })
+
+  test("a trigger outside its dialog renders as a plain button", async () => {
+    const trigger = tagWith(await render(Outside), "Edit")
+    expect(trigger).toContain('type="button"')
+    expect(trigger).toContain('disabled=""')
+    expect(trigger).not.toContain("aria-haspopup")
+  })
+
+  test("an open alert dialog renders as an alertdialog", async () => {
+    const html = await render(Alert)
+    expect(html).toMatch(/<div[^>]*class="content"[^>]*role="alertdialog"/)
   })
 })

@@ -151,7 +151,12 @@ type PartOptions = {
   joined?: Joined
   /** Moves the element into a container while the part is present. `false` keeps it in place. */
   portal?: () => PopupContainer | false
+  /** A popup's `viewport` part. While it's present, the element sits in a full-screen element made for it, which is what moves into the container. */
+  viewport?: () => Parameters<typeof partAttrs>[0] | undefined
 }
+
+// What an element shows while the component it belongs to isn't on the page yet.
+type Plain = () => Attrs
 
 // Binds an element to a part of whichever component `ownerOf` names now. With
 // none yet, like a trigger whose dialog hasn't mounted, the element is plain.
@@ -159,7 +164,8 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
   ownerOf: () => PrimitiveHandle<P> | undefined,
   slot: S,
   props: () => PropsOf<P, S>,
-  { joined, portal }: PartOptions
+  { joined, portal, viewport }: PartOptions,
+  plain?: Plain
 ) {
   const host =
     inject<ElementRef<HTMLElement | Comment>>(ElementRef).nativeElement
@@ -211,6 +217,7 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
     | { el: HTMLElement; part: unknown; joined: unknown; unbind: () => void }
     | undefined
   let moved: { el: HTMLElement; home: Comment } | undefined
+  let frame: HTMLElement | undefined
 
   const goHome = () => {
     const current = moved
@@ -224,13 +231,40 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
       current.el.remove()
     }
     current.home.remove()
+    if (frame && !frame.hasChildNodes()) {
+      frame.remove()
+    }
+  }
+
+  // Presented as a sheet, a popup sits in a full-screen element, which goes
+  // where the popup would have: into its container, or in place.
+  const frameIn = (
+    el: HTMLElement,
+    target: Element | DocumentFragment | null
+  ) => {
+    const wrapper = viewport?.()
+    if (!wrapper || !isPresent(wrapper)) {
+      return undefined
+    }
+    frame ??= el.ownerDocument.createElement("div")
+    applyAttrs(frame, partAttrs(wrapper), `${channel}:viewport`)
+    const anchor = moved?.el === el ? moved.home : el
+    if (frame.parentNode !== (target ?? anchor.parentNode)) {
+      if (target) {
+        target.append(frame)
+      } else {
+        anchor.before(frame)
+      }
+    }
+    return frame
   }
 
   // A popup moves into its container once it's in the page, and goes back
   // before it stops being present, so Angular finds it where it rendered it.
   const move = (el: HTMLElement) => {
     const wanted = portal?.()
-    const target = wanted === false ? null : portalTarget(wanted)
+    const container = wanted === false ? null : portalTarget(wanted)
+    const target = frameIn(el, container) ?? container
     if (moved && (moved.el !== el || el.parentNode !== target)) {
       goHome()
     }
@@ -260,10 +294,12 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
     if (!current) {
       unbind()
       goHome()
-      if (shown) {
+      if (plain) {
+        applyAttrs(el, untracked(plain), channel)
+      } else if (shown) {
         releaseAttrs(el, channel)
-        shown = false
       }
+      shown = false
       return
     }
     const present = isPresent(current)
@@ -302,7 +338,7 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
       goHome()
     }
     if (inPage && present) {
-      if (portal) {
+      if (portal || viewport) {
         untracked(() => move(el))
       }
       if (!bound) {
@@ -385,6 +421,7 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
     const current = part()
     joined?.part()
     portal?.()
+    plain?.()
     element()
     untracked(() => {
       render()
@@ -458,9 +495,10 @@ function useOutsidePart<P extends Primitive, S extends SlotName<P>>(
   owner: () => PrimitiveHandle<P> | undefined,
   slot: S,
   props: () => PropsOf<P, S> = () => ({}) as PropsOf<P, S>,
-  options: PartOptions = {}
+  options: PartOptions = {},
+  plain?: Plain
 ) {
-  return bindPart(owner, slot, props, options)
+  return bindPart(owner, slot, props, options, plain)
 }
 
 export {

@@ -136,6 +136,9 @@ class FieldDescription {
 class FieldError {
   /** When this error shows. `true` shows it always and `false` never. A validity flag, like `"valueMissing"`, shows it only for that problem of the browser's own validation. Without it, any problem shows it. */
   readonly match: InputSignal<FieldErrorProps["match"]> = input()
+  /** `match`, for the `*` form, which leaves other attributes on the element inside: `*uiFieldError="'valueMissing'"`. */
+  readonly uiFieldError: InputSignal<FieldErrorProps["match"] | ""> = input()
+  readonly #match = () => this.match() ?? (this.uiFieldError() || undefined)
 
   readonly #field = inject(FieldContext, { optional: true })
   readonly #value = useId()
@@ -143,9 +146,11 @@ class FieldError {
   readonly state = this.#field
     ? usePart(this.#field.handle, "error", () => ({
         value: this.#value,
-        match: this.match(),
+        match: this.#match(),
       })).state
-    : useOutside("error", () => fieldOutsideErrorShown({ match: this.match() }))
+    : useOutside("error", () =>
+        fieldOutsideErrorShown({ match: this.#match() })
+      )
 
   constructor() {
     const state = this.state
