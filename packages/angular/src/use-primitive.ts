@@ -36,6 +36,7 @@ import {
   selectedKeys,
   subscribe,
   takeOwnId,
+  type Feature,
 } from "@ui-sdk/core/renderer"
 
 // One counter per app, so ids match between the server and the browser and a
@@ -76,9 +77,15 @@ function usePrimitive<P extends Primitive>(
 ) {
   const id = inject(Ids).next()
   let instance: ReturnType<P> | undefined
+  const features = new Set<Feature>()
   // Inputs arrive after the constructor, so the instance waits for a reader.
-  const make = () =>
-    (instance ??= primitive({ ...untracked(options), id }) as ReturnType<P>)
+  const make = () => {
+    if (!instance) {
+      instance = primitive({ ...untracked(options), id }) as ReturnType<P>
+      features.forEach((feature) => instance?.use(feature))
+    }
+    return instance
+  }
   effect(() => {
     const next = options()
     untracked(() => make().setOptions({ ...next, id }))
@@ -92,7 +99,19 @@ function usePrimitive<P extends Primitive>(
       return make().api as TypesOf<P>["api"]
     },
   }
+  adding.set(handle, (feature) => {
+    features.add(feature)
+    instance?.use(feature)
+  })
   return handle
+}
+
+const adding = new WeakMap<object, (feature: Feature) => void>()
+
+// Adds the feature that ships a part's slot, like a menu's checkbox items,
+// before the part reads it. The instance may not exist yet.
+function useFeature(owner: PrimitiveHandle<any>, feature: Feature) {
+  adding.get(owner)?.(feature)
 }
 
 const sameState = (a: object, b: object) => {
@@ -506,6 +525,7 @@ export {
   type PartOptions,
   type PopupContainer,
   type PrimitiveHandle,
+  useFeature,
   useId,
   useOutsidePart,
   usePart,

@@ -9,6 +9,8 @@ import { onTestFinished } from "vitest"
 
 // jsdom has no Web Animations, which core asks for as a panel leaves.
 Element.prototype.getAnimations ??= () => []
+// jsdom has no layout either, which a list asks for as it highlights an item.
+Element.prototype.scrollIntoView ??= () => {}
 
 async function mount<Component>(component: Type<Component>) {
   const host = document.createElement("div")

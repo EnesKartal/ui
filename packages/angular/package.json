@@ -43,7 +43,10 @@
     "./hover-card": "./src/hover-card.ts",
     "./input": "./src/input.ts",
     "./label": "./src/label.ts",
+    "./menu": "./src/menu.ts",
+    "./menubar": "./src/menubar.ts",
     "./meter": "./src/meter.ts",
+    "./navigation-menu": "./src/navigation-menu.ts",
     "./number-input": "./src/number-input.ts",
     "./otp-input": "./src/otp-input.ts",
     "./pagination": "./src/pagination.ts",
@@ -61,6 +64,7 @@
     "./textarea": "./src/textarea.ts",
     "./time-input": "./src/time-input.ts",
     "./timeline": "./src/timeline.ts",
+    "./toast": "./src/toast.ts",
     "./toggle": "./src/toggle.ts",
     "./toolbar": "./src/toolbar.ts",
     "./tooltip": "./src/tooltip.ts"
@@ -127,9 +131,21 @@
         "types": "./dist/label.d.ts",
         "default": "./dist/label.js"
       },
+      "./menu": {
+        "types": "./dist/menu.d.ts",
+        "default": "./dist/menu.js"
+      },
+      "./menubar": {
+        "types": "./dist/menubar.d.ts",
+        "default": "./dist/menubar.js"
+      },
       "./meter": {
         "types": "./dist/meter.d.ts",
         "default": "./dist/meter.js"
+      },
+      "./navigation-menu": {
+        "types": "./dist/navigation-menu.d.ts",
+        "default": "./dist/navigation-menu.js"
       },
       "./number-input": {
         "types": "./dist/number-input.d.ts",
@@ -198,6 +214,10 @@
       "./timeline": {
         "types": "./dist/timeline.d.ts",
         "default": "./dist/timeline.js"
+      },
+      "./toast": {
+        "types": "./dist/toast.d.ts",
+        "default": "./dist/toast.js"
       },
       "./toggle": {
         "types": "./dist/toggle.d.ts",

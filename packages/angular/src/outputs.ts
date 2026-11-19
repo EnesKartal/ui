@@ -43,29 +43,67 @@ class ListenedEmitter<Emitted> extends OutputEmitterRef<Emitted> {
   }
 }
 
+// What an output that can be waited on adds to what it emits.
+type Waiting = {
+  /** Keeps the part pending until the Promise settles. A rejection becomes the part's error. */
+  waitUntil: (promise: Promise<unknown>) => void
+}
+
+// Emits with `waitUntil()`, and returns what the listeners asked to wait for.
+function emitWaiting<Emitted extends object>(
+  emitter: OutputEmitterRef<Emitted & Waiting>,
+  emitted: Emitted
+) {
+  const waiting: Promise<unknown>[] = []
+  let emitting = true
+  emitter.emit({
+    ...emitted,
+    waitUntil(promise) {
+      if (!emitting) {
+        throw new Error(
+          "waitUntil() can only be called while the output emits."
+        )
+      }
+      waiting.push(promise)
+    },
+  })
+  emitting = false
+  return waiting.length ? Promise.all(waiting) : undefined
+}
+
 // An `(action)` output. A part with a listener runs it before what the press
 // does next, and one without keeps its plain press.
 class ActionEmitter extends ListenedEmitter<Action> {
-  readonly #run = (event: Event | undefined, details: ActionDetails) => {
-    const waiting: Promise<unknown>[] = []
-    let emitting = true
-    this.emit({
-      ...details,
-      event,
-      waitUntil(promise) {
-        if (!emitting) {
-          throw new Error(
-            "waitUntil() can only be called while the output emits."
-          )
-        }
-        waiting.push(promise)
-      },
-    })
-    emitting = false
-    return waiting.length ? Promise.all(waiting) : undefined
-  }
+  readonly #run = (event: Event | undefined, details: ActionDetails) =>
+    emitWaiting(this, { ...details, event })
   /** The part's `action` prop. */
   readonly handler = computed(() => (this.listened() ? this.#run : undefined))
 }
 
-export { type Action, ActionEmitter, type Change, emitChange, ListenedEmitter }
+// An action only its event describes, like a menu item's `(select)`.
+class EventActionEmitter extends ListenedEmitter<Waiting & { event: Event }> {
+  readonly #run = (event: Event) => emitWaiting(this, { event })
+  /** The part's callback prop. */
+  readonly handler = computed(() => (this.listened() ? this.#run : undefined))
+}
+
+// An action that carries a value, like a menu's, which runs for the item chosen.
+class ValueActionEmitter<Value, Details extends object> extends ListenedEmitter<
+  Details & Waiting & { value: Value }
+> {
+  readonly #run = (value: Value, details: Details) =>
+    emitWaiting(this, { ...details, value })
+  /** The component's action option. */
+  readonly handler = computed(() => (this.listened() ? this.#run : undefined))
+}
+
+export {
+  type Action,
+  ActionEmitter,
+  type Change,
+  emitChange,
+  EventActionEmitter,
+  ListenedEmitter,
+  ValueActionEmitter,
+  type Waiting,
+}

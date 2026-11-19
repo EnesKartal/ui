@@ -1,8 +1,10 @@
 import { computed, inject, Injectable, type Type } from "@angular/core"
 import type { Attrs, Primitive, PropsOf, SlotName } from "@ui-sdk/core"
+import type { Feature } from "@ui-sdk/core/renderer"
 import { useControllerEntry, useControllerTarget } from "./controller-target"
 import { useText } from "./text"
 import {
+  useFeature,
   useOutsidePart,
   usePart,
   type PopupContainer,
@@ -69,11 +71,13 @@ function usePopupTrigger<P extends Primitive, S extends SlotName<P>>(
     plain = plainButton(),
     inside,
     shortcut,
+    feature,
   }: {
     controller: () => object | undefined
     plain?: () => Attrs
     inside?: Type<PopupTriggerScope<P>>
     shortcut?: () => string | undefined
+    feature?: Feature
   }
 ) {
   const root = useControllerTarget(
@@ -85,7 +89,15 @@ function usePopupTrigger<P extends Primitive, S extends SlotName<P>>(
     trigger.root = root
     trigger.shortcut = shortcut ?? trigger.shortcut
   }
-  return useOutsidePart(() => root()?.handle, slot, props, {}, plain)
+  // Each popup the part binds to gets the feature that ships its slot first.
+  const owner = () => {
+    const handle = root()?.handle
+    if (handle && feature) {
+      useFeature(handle, feature)
+    }
+    return handle
+  }
+  return useOutsidePart(owner, slot, props, {}, plain)
 }
 
 // A content part: it renders into its own container, else its root's, else

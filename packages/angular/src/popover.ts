@@ -18,7 +18,13 @@ import {
   type PopoverTriggerProps,
   type PopoverTriggerState,
 } from "@ui-sdk/core/popover"
-import { optionalBoolean, optionalNumber, starInputs, withStar } from "./inputs"
+import {
+  optionalBoolean,
+  optionalNumber,
+  type StarInput,
+  starInputs,
+  withStar,
+} from "./inputs"
 import { emitChange } from "./outputs"
 import {
   plainButton,
@@ -216,7 +222,7 @@ class PopoverContent {
   /** Renders the popup into this element instead of in place. */
   readonly container = input<PopupContainer>()
   /** The inputs as one object, for the `*` form, which leaves other attributes on the element inside: `*uiPopoverContent="{ side: 'bottom' }"`. */
-  readonly uiPopoverContent = input(undefined, {
+  readonly uiPopoverContent: StarInput<PopoverContentProps> = input(undefined, {
     transform: starInputs<PopoverContentProps>,
   })
 

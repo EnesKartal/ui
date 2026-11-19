@@ -19,7 +19,7 @@ import {
   type DrawerOutletState,
   type DrawerTriggerProps,
 } from "@ui-sdk/core/drawer"
-import { optionalBoolean, starInputs, withStar } from "./inputs"
+import { optionalBoolean, type StarInput, starInputs, withStar } from "./inputs"
 import { ActionEmitter, emitChange, type Action } from "./outputs"
 import {
   plainButton,
@@ -336,7 +336,7 @@ class DrawerContent {
   /** Renders the popup into this element instead of in place. */
   readonly container = input<PopupContainer>()
   /** The inputs as one object, for the `*` form, which leaves other attributes on the element inside: `*uiDrawerContent="{ container: layer }"`. */
-  readonly uiDrawerContent = input(undefined, {
+  readonly uiDrawerContent: StarInput<DrawerContentProps> = input(undefined, {
     transform: starInputs<DrawerContentProps>,
   })
 

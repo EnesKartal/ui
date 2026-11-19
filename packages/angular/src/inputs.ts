@@ -1,4 +1,8 @@
-import { booleanAttribute, numberAttribute } from "@angular/core"
+import {
+  booleanAttribute,
+  numberAttribute,
+  type InputSignalWithTransform,
+} from "@angular/core"
 
 // An input left out stays undefined, so core's default applies, and a bare
 // attribute like `disabled` reads as true.
@@ -21,6 +25,12 @@ const nullableNumber = (value: unknown) =>
 const starInputs = <Props>(value: Partial<Props> | "" | undefined) =>
   value || undefined
 
+// The type of such an input, written out so declarations name `Props` itself.
+type StarInput<Props> = InputSignalWithTransform<
+  Partial<Props> | undefined,
+  Partial<Props> | "" | undefined
+>
+
 // A part's props: what its own inputs set, over what the `*` form gave.
 function withStar<Props extends object>(
   star: Partial<Props> | undefined,
@@ -38,4 +48,11 @@ function withStar<Props extends object>(
   return props
 }
 
-export { nullableNumber, optionalBoolean, optionalNumber, starInputs, withStar }
+export {
+  nullableNumber,
+  optionalBoolean,
+  optionalNumber,
+  type StarInput,
+  starInputs,
+  withStar,
+}

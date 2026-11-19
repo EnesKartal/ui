@@ -18,7 +18,13 @@ import {
   type TooltipTriggerProps,
   type TooltipTriggerState,
 } from "@ui-sdk/core/tooltip"
-import { optionalBoolean, optionalNumber, starInputs, withStar } from "./inputs"
+import {
+  optionalBoolean,
+  optionalNumber,
+  type StarInput,
+  starInputs,
+  withStar,
+} from "./inputs"
 import { emitChange } from "./outputs"
 import {
   PopupRoot,
@@ -192,7 +198,7 @@ class TooltipContent {
   /** Renders the popup into this element instead of in place. */
   readonly container = input<PopupContainer>()
   /** The inputs as one object, for the `*` form, which leaves other attributes on the element inside: `*uiTooltipContent="{ side: 'bottom' }"`. */
-  readonly uiTooltipContent = input(undefined, {
+  readonly uiTooltipContent: StarInput<TooltipContentProps> = input(undefined, {
     transform: starInputs<TooltipContentProps>,
   })
 

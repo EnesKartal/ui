@@ -18,7 +18,7 @@ import type {
   DialogShortcutState,
   DialogTriggerState,
 } from "@ui-sdk/core/dialog"
-import { optionalBoolean, starInputs, withStar } from "./inputs"
+import { optionalBoolean, type StarInput, starInputs, withStar } from "./inputs"
 import { ActionEmitter, type Action } from "./outputs"
 import {
   plainButton,
@@ -135,13 +135,16 @@ class DialogContent {
   /** Renders the dialog into this element instead of in place. The root's `container` does the same for its backdrop too. */
   readonly container = input<PopupContainer>()
   /** The inputs as one object, for the `*` form, which leaves other attributes on the element inside: `*uiDialogContent="{ inline: true }"`. */
-  readonly uiDialogContent = input(undefined, {
+  readonly uiDialogContent: StarInput<DialogContentProps> = input(undefined, {
     transform: starInputs<DialogContentProps>,
   })
   /** The same for an alert dialog: `*uiAlertDialogContent="{ inline: true }"`. */
-  readonly uiAlertDialogContent = input(undefined, {
-    transform: starInputs<DialogContentProps>,
-  })
+  readonly uiAlertDialogContent: StarInput<DialogContentProps> = input(
+    undefined,
+    {
+      transform: starInputs<DialogContentProps>,
+    }
+  )
   readonly #star = () => this.uiDialogContent() ?? this.uiAlertDialogContent()
 
   readonly #dialog = inject(DialogScope)

@@ -15,7 +15,13 @@ import {
   type HoverCardTriggerProps,
   type HoverCardTriggerState,
 } from "@ui-sdk/core/hover-card"
-import { optionalBoolean, optionalNumber, starInputs, withStar } from "./inputs"
+import {
+  optionalBoolean,
+  optionalNumber,
+  type StarInput,
+  starInputs,
+  withStar,
+} from "./inputs"
 import { emitChange } from "./outputs"
 import {
   PopupRoot,
@@ -173,9 +179,10 @@ class HoverCardContent {
   /** Renders the popup into this element instead of in place. */
   readonly container = input<PopupContainer>()
   /** The inputs as one object, for the `*` form, which leaves other attributes on the element inside: `*uiHoverCardContent="{ side: 'bottom' }"`. */
-  readonly uiHoverCardContent = input(undefined, {
-    transform: starInputs<HoverCardContentProps>,
-  })
+  readonly uiHoverCardContent: StarInput<HoverCardContentProps> = input(
+    undefined,
+    { transform: starInputs<HoverCardContentProps> }
+  )
 
   /** The part's state, as a signal. */
   readonly state = usePopupContent(
