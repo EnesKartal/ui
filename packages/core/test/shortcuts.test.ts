@@ -207,6 +207,13 @@ describe("formatting shortcuts", () => {
     expect(ariaKeyshortcuts("cmd+up", false)).toBe("Meta+ArrowUp")
     expect(ariaKeyshortcuts("shift+space", true)).toBe("Shift+Space")
   })
+
+  test("a shortcut with no keys formats as nothing", () => {
+    for (const apple of [true, false]) {
+      expect(formatShortcut("", apple)).toBe("")
+      expect(ariaKeyshortcuts("", apple)).toBe("")
+    }
+  })
 })
 
 describe("the shortcut manager", () => {
