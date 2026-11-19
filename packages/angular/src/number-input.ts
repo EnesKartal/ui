@@ -138,12 +138,9 @@ class NumberInputGroup {
 })
 class NumberInputControl {
   /** The part's state, as a signal. */
-  readonly state = usePart(
-    inject(NumberInput).handle,
-    "control",
-    undefined,
-    useFieldControl()?.joined
-  ).state
+  readonly state = usePart(inject(NumberInput).handle, "control", undefined, {
+    joined: useFieldControl()?.joined,
+  }).state
 }
 
 /**

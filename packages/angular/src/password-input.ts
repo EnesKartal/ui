@@ -111,12 +111,9 @@ class PasswordInput {
 class PasswordInputControl {
   readonly #root = inject(PasswordInput)
   /** The part's state, as a signal. */
-  readonly state = usePart(
-    this.#root.handle,
-    "control",
-    undefined,
-    useFieldControl()?.joined
-  ).state
+  readonly state = usePart(this.#root.handle, "control", undefined, {
+    joined: useFieldControl()?.joined,
+  }).state
 
   constructor() {
     useTextValue(() => ({

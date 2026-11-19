@@ -34,8 +34,10 @@
     "./button": "./src/button.ts",
     "./checkbox": "./src/checkbox.ts",
     "./collapsible": "./src/collapsible.ts",
+    "./date-input": "./src/date-input.ts",
     "./dialog": "./src/dialog.ts",
     "./field": "./src/field.ts",
+    "./file-input": "./src/file-input.ts",
     "./input": "./src/input.ts",
     "./label": "./src/label.ts",
     "./meter": "./src/meter.ts",
@@ -53,6 +55,7 @@
     "./switch": "./src/switch.ts",
     "./tabs": "./src/tabs.ts",
     "./textarea": "./src/textarea.ts",
+    "./time-input": "./src/time-input.ts",
     "./timeline": "./src/timeline.ts",
     "./toggle": "./src/toggle.ts",
     "./toolbar": "./src/toolbar.ts"
@@ -83,6 +86,10 @@
         "types": "./dist/collapsible.d.ts",
         "default": "./dist/collapsible.js"
       },
+      "./date-input": {
+        "types": "./dist/date-input.d.ts",
+        "default": "./dist/date-input.js"
+      },
       "./dialog": {
         "types": "./dist/dialog.d.ts",
         "default": "./dist/dialog.js"
@@ -90,6 +97,10 @@
       "./field": {
         "types": "./dist/field.d.ts",
         "default": "./dist/field.js"
+      },
+      "./file-input": {
+        "types": "./dist/file-input.d.ts",
+        "default": "./dist/file-input.js"
       },
       "./input": {
         "types": "./dist/input.d.ts",
@@ -158,6 +169,10 @@
       "./textarea": {
         "types": "./dist/textarea.d.ts",
         "default": "./dist/textarea.js"
+      },
+      "./time-input": {
+        "types": "./dist/time-input.d.ts",
+        "default": "./dist/time-input.js"
       },
       "./timeline": {
         "types": "./dist/timeline.d.ts",

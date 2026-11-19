@@ -20,15 +20,11 @@ class OTPInputControl {
     for (const [name, value] of Object.entries(root.named)) {
       el.setAttribute(name, value)
     }
-    usePart(
-      root.handle,
-      "control",
-      undefined,
-      useFieldControl(() => ({
-        id: root.named["id"],
-        describedBy: root.named["aria-describedby"],
-      }))?.joined
-    )
+    const field = useFieldControl(() => ({
+      id: root.named["id"],
+      describedBy: root.named["aria-describedby"],
+    }))
+    usePart(root.handle, "control", undefined, { joined: field?.joined })
   }
 }
 

@@ -5,7 +5,11 @@ import { effect, ElementRef, inject, TemplateRef } from "@angular/core"
 // that says the text is ours, so hydration keeps updating what the server wrote.
 function useText(text: () => string | undefined, marker = "data-text") {
   const el = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement
-  if (el.nodeType !== 1 || inject(TemplateRef, { optional: true })) {
+  if (
+    el.nodeType !== 1 ||
+    el.localName === "input" ||
+    inject(TemplateRef, { optional: true })
+  ) {
     return
   }
   effect(() => {

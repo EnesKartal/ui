@@ -97,8 +97,9 @@ class Checkbox {
     group: this.#group ? () => this.#group?.handle.api : undefined,
   }))
   /** The checkbox's state, as a signal. */
-  readonly state = usePart(this.handle, "root", undefined, this.#field?.joined)
-    .state
+  readonly state = usePart(this.handle, "root", undefined, {
+    joined: this.#field?.joined,
+  }).state
 
   constructor() {
     useNativeInput(this.handle, "input")
@@ -177,8 +178,9 @@ class CheckboxGroup {
     controller: this.controller(),
   }))
   /** The checkbox group's state, as a signal. */
-  readonly state = usePart(this.handle, "group", undefined, this.#field?.joined)
-    .state
+  readonly state = usePart(this.handle, "group", undefined, {
+    joined: this.#field?.joined,
+  }).state
 
   constructor() {
     useNativeInput(this.handle, "group-input")

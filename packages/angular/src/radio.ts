@@ -78,8 +78,9 @@ class RadioGroup {
     controller: this.controller(),
   }))
   /** The radio group's state, as a signal. */
-  readonly state = usePart(this.handle, "group", undefined, this.#field?.joined)
-    .state
+  readonly state = usePart(this.handle, "group", undefined, {
+    joined: this.#field?.joined,
+  }).state
 
   constructor() {
     groupFields.set(this, inject(FieldContext, { optional: true }))
@@ -108,12 +109,9 @@ class Radio {
     disabled: this.disabled() || this.#field?.disabled(),
   })
   /** The radio's state, as a signal. */
-  readonly state = usePart(
-    this.#group.handle,
-    "root",
-    this.#item,
-    this.#field?.joined
-  ).state
+  readonly state = usePart(this.#group.handle, "root", this.#item, {
+    joined: this.#field?.joined,
+  }).state
 
   constructor() {
     useNativeInput(this.#group.handle, "input", this.#item)

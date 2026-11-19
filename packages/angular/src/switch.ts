@@ -69,8 +69,9 @@ class Switch {
     controller: this.controller(),
   }))
   /** The switch's state, as a signal. */
-  readonly state = usePart(this.handle, "root", undefined, this.#field?.joined)
-    .state
+  readonly state = usePart(this.handle, "root", undefined, {
+    joined: this.#field?.joined,
+  }).state
 
   constructor() {
     useNativeInput(this.handle, "input")

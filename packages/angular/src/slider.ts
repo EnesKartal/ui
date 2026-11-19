@@ -127,15 +127,12 @@ class Slider {
     return Array.isArray(shape) && shape.length > 1
   })
   /** The slider's state, as a signal. */
-  readonly state = usePart(
-    this.handle,
-    "root",
-    undefined,
-    this.#field && {
+  readonly state = usePart(this.handle, "root", undefined, {
+    joined: this.#field && {
       ...this.#field.joined,
       part: () => (this.#range() ? this.#field?.joined.part() : undefined),
-    }
-  ).state
+    },
+  }).state
 
   constructor() {
     thumbFields.set(this, () => (this.#range() ? undefined : this.#field))

@@ -30,7 +30,7 @@ function useNativeInput<P extends Primitive, S extends SlotName<P>>(
     providers: [
       {
         provide: NativeInputPart,
-        useValue: () => usePart(owner, slot, props, joined),
+        useValue: () => usePart(owner, slot, props, { joined }),
       },
     ],
     parent: inject(Injector),

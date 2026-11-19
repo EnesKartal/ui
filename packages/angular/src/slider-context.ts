@@ -30,15 +30,12 @@ class SliderThumbInput {
       id: field?.controlId(),
       describedBy: thumb.named["aria-describedby"],
     }))
-    usePart(
-      thumb.handle,
-      "thumb-input",
-      thumb.key,
-      field && {
+    usePart(thumb.handle, "thumb-input", thumb.key, {
+      joined: field && {
         ...field.joined,
         part: () => (thumb.inField() ? field.joined.part() : undefined),
-      }
-    )
+      },
+    })
   }
 }
 

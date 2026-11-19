@@ -29,6 +29,7 @@ import {
   bind,
   conditional,
   partState,
+  portalTarget,
   present as isPresent,
   releaseAttrs,
   sameSlotState,
@@ -136,17 +137,29 @@ type Joined = {
 }
 
 /**
- * Binds the directive's element to one part of a component. Call it in a
- * field initializer. On an element, the part stays in the page and is hidden
- * while it isn't present. On an `<ng-template>`, which the `*` form makes,
- * the element exists only while the part is present.
+ * Where a popup renders: an element to move into, or nothing to stay in place.
  * @experimental
  */
-function usePart<P extends Primitive, S extends SlotName<P>>(
-  owner: PrimitiveHandle<P>,
-  slot: S,
-  props: () => PropsOf<P, S> = () => ({}) as PropsOf<P, S>,
+type PopupContainer = Element | DocumentFragment | null | undefined
+
+/**
+ * What `usePart` takes after the props.
+ * @experimental
+ */
+type PartOptions = {
+  /** A field's control part for the same element, from `useFieldControl`. */
   joined?: Joined
+  /** Moves the element into a container while the part is present. `false` keeps it in place. */
+  portal?: () => PopupContainer | false
+}
+
+// Binds an element to a part of whichever component `ownerOf` names now. With
+// none yet, like a trigger whose dialog hasn't mounted, the element is plain.
+function bindPart<P extends Primitive, S extends SlotName<P>>(
+  ownerOf: () => PrimitiveHandle<P> | undefined,
+  slot: S,
+  props: () => PropsOf<P, S>,
+  { joined, portal }: PartOptions
 ) {
   const host =
     inject<ElementRef<HTMLElement | Comment>>(ElementRef).nativeElement
@@ -154,22 +167,34 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
   const container = template ? inject(ViewContainerRef) : undefined
   const own = inject(Ids).next()
   const channel = `render:${own}`
+  let claimed: { instance: object; lone: boolean } | undefined
   // Core keeps one part per key and gives it the new props, so the same
   // object comes back and only this computed can say that it changed.
-  let lone: boolean | undefined
   const part = computed(
     () => {
+      const instance = ownerOf()?.instance
+      if (!instance) {
+        return undefined
+      }
       const given = props() as PropsOf<P, S> & { id?: string; value?: unknown }
       if (given.value !== undefined || given.id !== undefined) {
-        return owner.instance.part(slot, given)
+        return instance.part(slot, given)
       }
-      lone ??= claim(owner.instance, slot, own)
-      return owner.instance.part(slot, lone ? given : { ...given, id: own })
+      if (claimed?.instance !== instance) {
+        if (claimed?.lone) {
+          release(claimed.instance, slot, own)
+        }
+        claimed = { instance, lone: claim(instance, slot, own) }
+      }
+      return instance.part(slot, claimed.lone ? given : { ...given, id: own })
     },
     { equal: () => false }
   )
   const keyed = computed(() => part())
-  const selection = computed(() => selectedKeys(part()))
+  const selection = computed(() => {
+    const current = part()
+    return current && selectedKeys(current)
+  })
   const element = signal(template ? null : (host as HTMLElement))
   const changes = signal(0)
   const stateChanges = signal(0)
@@ -185,6 +210,38 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
   let bound:
     | { el: HTMLElement; part: unknown; joined: unknown; unbind: () => void }
     | undefined
+  let moved: { el: HTMLElement; home: Comment } | undefined
+
+  const goHome = () => {
+    const current = moved
+    moved = undefined
+    if (!current) {
+      return
+    }
+    if (current.home.isConnected) {
+      current.home.before(current.el)
+    } else {
+      current.el.remove()
+    }
+    current.home.remove()
+  }
+
+  // A popup moves into its container once it's in the page, and goes back
+  // before it stops being present, so Angular finds it where it rendered it.
+  const move = (el: HTMLElement) => {
+    const wanted = portal?.()
+    const target = wanted === false ? null : portalTarget(wanted)
+    if (moved && (moved.el !== el || el.parentNode !== target)) {
+      goHome()
+    }
+    if (!target || el.parentNode === target) {
+      return
+    }
+    const home = el.ownerDocument.createComment("")
+    el.before(home)
+    target.append(el)
+    moved = { el, home }
+  }
 
   const unbind = () => {
     const current = bound
@@ -200,6 +257,15 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
       return
     }
     const current = untracked(part)
+    if (!current) {
+      unbind()
+      goHome()
+      if (shown) {
+        releaseAttrs(el, channel)
+        shown = false
+      }
+      return
+    }
     const present = isPresent(current)
     const other = joined && untracked(joined.part)
     const attrs = other
@@ -232,14 +298,22 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
     ) {
       unbind()
     }
-    if (inPage && present && !bound) {
-      const binding = { el, part: current, joined: other, unbind: () => {} }
-      bound = binding
-      const unbindOwn = bind(current, el)
-      const unbindOther = other && bind(other, el)
-      binding.unbind = () => {
-        unbindOther?.()
-        unbindOwn()
+    if (!present) {
+      goHome()
+    }
+    if (inPage && present) {
+      if (portal) {
+        untracked(() => move(el))
+      }
+      if (!bound) {
+        const binding = { el, part: current, joined: other, unbind: () => {} }
+        bound = binding
+        const unbindOwn = bind(current, el)
+        const unbindOther = other && bind(other, el)
+        binding.unbind = () => {
+          unbindOther?.()
+          unbindOwn()
+        }
       }
     }
   }
@@ -248,7 +322,9 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
     if (!template || !container) {
       return
     }
-    const present = isPresent(untracked(part))
+    const current = untracked(part)
+    // With no component yet, the element renders plain.
+    const present = current ? isPresent(current) : true
     if (present && !view) {
       view = container.createEmbeddedView(template, context)
       const root = view.rootNodes.find(
@@ -257,6 +333,7 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
       element.set(root ?? null)
     } else if (!present && view) {
       unbind()
+      goHome()
       container.clear()
       view = undefined
       shown = false
@@ -267,6 +344,9 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
   effect((onCleanup) => {
     const current = keyed()
     selection()
+    if (!current) {
+      return
+    }
     const unsubscribe = untracked(() =>
       subscribe(current, (liveOnly: boolean) => {
         // A template may read state that only live attributes show, like `pending`.
@@ -302,15 +382,16 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
 
   effect(() => {
     changes()
-    part()
+    const current = part()
     joined?.part()
+    portal?.()
     element()
     untracked(() => {
       render()
       const el = element()
       const id = el?.getAttribute("id")
-      if (!shown && id) {
-        takeOwnId(part(), id)
+      if (current && !shown && id) {
+        takeOwnId(current, id)
       }
       sync()
     })
@@ -324,8 +405,9 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
 
   inject(DestroyRef).onDestroy(() => {
     unbind()
-    if (lone) {
-      release(owner.instance, slot, own)
+    goHome()
+    if (claimed?.lone) {
+      release(claimed.instance, slot, own)
     }
     const el = untracked(element)
     if (el) {
@@ -333,18 +415,61 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
     }
   })
 
-  const state: Signal<StateOf<P, S>> = computed(
+  const state = computed(
     () => {
       stateChanges()
-      return partState(part()) as StateOf<P, S>
+      const current = part()
+      return current && (partState(current) as StateOf<P, S>)
     },
-    { equal: (a, b) => sameState(a as object, b as object) }
+    {
+      equal: (a, b) =>
+        a === b || (!!a && !!b && sameState(a as object, b as object)),
+    }
   )
   const present = computed(() => {
     stateChanges()
-    return isPresent(part())
+    const current = part()
+    return !!current && isPresent(current)
   })
   return { present, state }
 }
 
-export { type Joined, type PrimitiveHandle, useId, usePart, usePrimitive }
+/**
+ * Binds the directive's element to one part of a component. Call it in a
+ * field initializer. On an element, the part stays in the page and is hidden
+ * while it isn't present. On an `<ng-template>`, which the `*` form makes,
+ * the element exists only while the part is present.
+ * @experimental
+ */
+function usePart<P extends Primitive, S extends SlotName<P>>(
+  owner: PrimitiveHandle<P>,
+  slot: S,
+  props: () => PropsOf<P, S> = () => ({}) as PropsOf<P, S>,
+  options: PartOptions = {}
+) {
+  const { present, state } = bindPart(() => owner, slot, props, options)
+  return { present, state: state as Signal<StateOf<P, S>> }
+}
+
+// `usePart` for a part that may sit outside its component, like a trigger in
+// a table row for a dialog elsewhere: `owner` reads the component it belongs
+// to now. Until there's one, the element is plain and `state()` is undefined.
+function useOutsidePart<P extends Primitive, S extends SlotName<P>>(
+  owner: () => PrimitiveHandle<P> | undefined,
+  slot: S,
+  props: () => PropsOf<P, S> = () => ({}) as PropsOf<P, S>,
+  options: PartOptions = {}
+) {
+  return bindPart(owner, slot, props, options)
+}
+
+export {
+  type Joined,
+  type PartOptions,
+  type PopupContainer,
+  type PrimitiveHandle,
+  useId,
+  useOutsidePart,
+  usePart,
+  usePrimitive,
+}

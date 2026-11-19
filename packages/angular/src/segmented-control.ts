@@ -79,8 +79,9 @@ class SegmentedControl {
     controller: this.controller(),
   }))
   /** The segmented control's state, as a signal. */
-  readonly state = usePart(this.handle, "root", undefined, this.#field?.joined)
-    .state
+  readonly state = usePart(this.handle, "root", undefined, {
+    joined: this.#field?.joined,
+  }).state
 }
 
 /**

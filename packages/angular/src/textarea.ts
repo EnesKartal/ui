@@ -90,12 +90,9 @@ class Textarea {
     required: this.required(),
   }))
   /** The textarea's state, as a signal. */
-  readonly state = usePart(
-    this.handle,
-    "root",
-    () => this.#states(),
-    this.#field?.joined
-  ).state
+  readonly state = usePart(this.handle, "root", () => this.#states(), {
+    joined: this.#field?.joined,
+  }).state
 }
 
 export { createInputController } from "@ui-sdk/core/input"
