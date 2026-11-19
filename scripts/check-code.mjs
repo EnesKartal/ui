@@ -132,6 +132,8 @@ const dragSessionAllowlist = {
 const htmlSinkAllowlist = {
   "packages/core/src/components/token-input/token-input-view.ts":
     "Parses its own markup, built from escaped text, in a template that never joins the page, to compare it with the server's.",
+  "packages/angular/src/token-input.ts":
+    "Writes the editor's markup, which core builds from escaped text.",
   "packages/react/src/token-input.tsx":
     "Writes the editor's markup, which core builds from escaped text.",
   "packages/solid/src/token-input.tsx":
@@ -190,6 +192,7 @@ const undocumentedExports = new Set([
   "ListboxItems",
   "MenuItems",
   "SelectItems",
+  "TokenInputTokenDef",
   "TreeItems",
   "TriggerMenuItems",
   "createOverlays",

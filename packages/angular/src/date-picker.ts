@@ -37,7 +37,6 @@ import {
   type PopupContainer,
   type PrimitiveHandle,
 } from "./use-primitive"
-
 import type { calendar } from "@ui-sdk/core/calendar"
 import {
   CalendarGrid,
@@ -47,6 +46,7 @@ import {
 } from "./calendar"
 import { CalendarContext, monthOffsets } from "./calendar-context"
 import { useText } from "./text"
+
 /**
  * What `(beforeValueChange)` emits: the value about to be set, why, and `cancel()` to keep the current one.
  * @experimental

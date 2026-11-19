@@ -84,6 +84,32 @@ class FormTextarea {
   }
 }
 
+// Adds the hidden textarea a text control submits through, right after the
+// directive's element, while `when` holds. Call it in a field initializer.
+function useFormTextarea(owner: PrimitiveHandle<any>, when: () => unknown) {
+  const container = inject(ViewContainerRef)
+  const injector = Injector.create({
+    providers: [
+      {
+        provide: FormInputPart,
+        useValue: () => useOutsidePart(() => owner, "form-input").attrs,
+      },
+    ],
+    parent: inject(Injector),
+  })
+  let rendered: ComponentRef<FormTextarea> | undefined
+  effect(() => {
+    if (when()) {
+      rendered ??= untracked(() =>
+        container.createComponent(FormTextarea, { injector })
+      )
+    } else {
+      rendered?.destroy()
+      rendered = undefined
+    }
+  })
+}
+
 // The roots whose hidden inputs wait for an element. One on an
 // `<ng-container>` has none to put them after, and hydration can't find
 // views added to a container that has content.
@@ -153,4 +179,4 @@ function renderFormInputs(owner: PrimitiveHandle<any>) {
   })
 }
 
-export { useFormInputs, useNativeInput, useOwedFormInputs }
+export { useFormInputs, useFormTextarea, useNativeInput, useOwedFormInputs }

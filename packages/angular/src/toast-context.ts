@@ -24,6 +24,10 @@ const ToastRegionContext = new InjectionToken<
   PrimitiveHandle<typeof toastRegion>
 >("uiToastRegion")
 
+// Set by the overlay host on the region it renders, which takes a toaster
+// only while no region the app placed shows it.
+const HostedRegion = new InjectionToken<boolean>("ui-sdk hosted region")
+
 // The list a region renders around its toasts.
 @Directive({ selector: "[uiToastList]" })
 class ToastList {
@@ -72,4 +76,10 @@ function useContent(
   inject(DestroyRef).onDestroy(clear)
 }
 
-export { type ToastContent, ToastList, ToastRegionContext, useContent }
+export {
+  HostedRegion,
+  type ToastContent,
+  ToastList,
+  ToastRegionContext,
+  useContent,
+}

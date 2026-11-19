@@ -1,4 +1,4 @@
-import { effect, ElementRef, inject, TemplateRef } from "@angular/core"
+import { effect, ElementRef, inject, signal, TemplateRef } from "@angular/core"
 
 // Fills an element the author left empty with text from its part's state,
 // like a field error with the browser's message. `marker` is the attribute
@@ -26,6 +26,17 @@ function useText(text: () => string | undefined, marker = "data-text") {
   })
 }
 
+// Whether the author left the element empty, for a part whose text core
+// writes then. Known once the element's content is in the page.
+function useBlank() {
+  const el = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement
+  const blank = signal(false)
+  if (el.nodeType === 1) {
+    effect(() => blank.set(!el.childNodes.length))
+  }
+  return blank.asReadonly()
+}
+
 // Takes attributes the author wrote on a part that belong on an element
 // inside it, like a slider thumb's `aria-label`, which names its input.
 function moveAttributes(names: readonly string[]) {
@@ -41,4 +52,4 @@ function moveAttributes(names: readonly string[]) {
   return moved
 }
 
-export { moveAttributes, useText }
+export { moveAttributes, useBlank, useText }

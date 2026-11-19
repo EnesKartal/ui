@@ -23,6 +23,7 @@ import {
 import { optionalBoolean, optionalNumber } from "./inputs"
 import { ActionEmitter } from "./outputs"
 import {
+  HostedRegion,
   ToastList,
   ToastRegionContext,
   useContent,
@@ -244,6 +245,7 @@ class ToastRegion {
   /** Where the region renders. Without top layer support, the body. */
   readonly container = input<PopupContainer>()
 
+  readonly #placed = !inject(HostedRegion, { optional: true })
   readonly #label =
     inject(new HostAttributeToken("aria-label"), { optional: true }) ??
     undefined
@@ -259,7 +261,7 @@ class ToastRegion {
         shortcut: this.shortcut(),
         pendingAnnouncement: this.pendingAnnouncement(),
         debug: this.debug(),
-        placed: true,
+        placed: this.#placed,
         label: this.#label,
       }) satisfies ToastRegionInternalOptions
   )
