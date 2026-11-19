@@ -28,7 +28,7 @@ function setup() {
     () => instance.destroy(),
     () => content.remove()
   )
-  const part = (slot: string, props?: Record<string, unknown>) => {
+  const part = (slot: "empty" | "item", props?: Record<string, unknown>) => {
     const el = list.appendChild(document.createElement("div"))
     const unbind = bind(instance.part(slot, props), el)
     return () => {
