@@ -238,6 +238,10 @@ function matchesShortcut(
   shortcut: string,
   apple = isApple()
 ) {
+  // Chrome's autofill sends a keydown that isn't a KeyboardEvent, with no key.
+  if (typeof event.key !== "string") {
+    return false
+  }
   const cache = parsed[+apple]
   let keys = cache.get(shortcut)
   if (!keys) {

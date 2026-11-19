@@ -35,6 +35,12 @@ function key(init: {
 const plain = (text: string) => text.replace(/[⁦⁩]/g, "")
 
 describe("matching shortcuts", () => {
+  test("a keydown with no key, like Chrome's autofill sends, matches nothing", () => {
+    const autofill = new Event("keydown") as KeyboardEvent
+    expect(matchesShortcut(autofill, "f6", true)).toBe(false)
+    expect(matchesShortcut(autofill, "mod+k", false)).toBe(false)
+  })
+
   test("letters match the typed key, case-insensitively", () => {
     expect(
       matchesShortcut(
