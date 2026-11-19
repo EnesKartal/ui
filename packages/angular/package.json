@@ -31,11 +31,17 @@
   "exports": {
     "./accordion": "./src/accordion.ts",
     "./alert-dialog": "./src/alert-dialog.ts",
+    "./autocomplete": "./src/autocomplete.ts",
     "./avatar": "./src/avatar.ts",
     "./button": "./src/button.ts",
+    "./calendar": "./src/calendar.ts",
     "./checkbox": "./src/checkbox.ts",
     "./collapsible": "./src/collapsible.ts",
+    "./color-picker": "./src/color-picker.ts",
+    "./combobox": "./src/combobox.ts",
+    "./command": "./src/command.ts",
     "./date-input": "./src/date-input.ts",
+    "./date-picker": "./src/date-picker.ts",
     "./dialog": "./src/dialog.ts",
     "./drawer": "./src/drawer.ts",
     "./field": "./src/field.ts",
@@ -43,6 +49,7 @@
     "./hover-card": "./src/hover-card.ts",
     "./input": "./src/input.ts",
     "./label": "./src/label.ts",
+    "./listbox": "./src/listbox.ts",
     "./menu": "./src/menu.ts",
     "./menubar": "./src/menubar.ts",
     "./meter": "./src/meter.ts",
@@ -57,6 +64,7 @@
     "./radio": "./src/radio.ts",
     "./rating": "./src/rating.ts",
     "./segmented-control": "./src/segmented-control.ts",
+    "./select": "./src/select.ts",
     "./separator": "./src/separator.ts",
     "./slider": "./src/slider.ts",
     "./switch": "./src/switch.ts",
@@ -67,7 +75,8 @@
     "./toast": "./src/toast.ts",
     "./toggle": "./src/toggle.ts",
     "./toolbar": "./src/toolbar.ts",
-    "./tooltip": "./src/tooltip.ts"
+    "./tooltip": "./src/tooltip.ts",
+    "./tree": "./src/tree.ts"
   },
   "sideEffects": false,
   "files": [
@@ -83,6 +92,10 @@
         "types": "./dist/alert-dialog.d.ts",
         "default": "./dist/alert-dialog.js"
       },
+      "./autocomplete": {
+        "types": "./dist/autocomplete.d.ts",
+        "default": "./dist/autocomplete.js"
+      },
       "./avatar": {
         "types": "./dist/avatar.d.ts",
         "default": "./dist/avatar.js"
@@ -90,6 +103,10 @@
       "./button": {
         "types": "./dist/button.d.ts",
         "default": "./dist/button.js"
+      },
+      "./calendar": {
+        "types": "./dist/calendar.d.ts",
+        "default": "./dist/calendar.js"
       },
       "./checkbox": {
         "types": "./dist/checkbox.d.ts",
@@ -99,9 +116,25 @@
         "types": "./dist/collapsible.d.ts",
         "default": "./dist/collapsible.js"
       },
+      "./color-picker": {
+        "types": "./dist/color-picker.d.ts",
+        "default": "./dist/color-picker.js"
+      },
+      "./combobox": {
+        "types": "./dist/combobox.d.ts",
+        "default": "./dist/combobox.js"
+      },
+      "./command": {
+        "types": "./dist/command.d.ts",
+        "default": "./dist/command.js"
+      },
       "./date-input": {
         "types": "./dist/date-input.d.ts",
         "default": "./dist/date-input.js"
+      },
+      "./date-picker": {
+        "types": "./dist/date-picker.d.ts",
+        "default": "./dist/date-picker.js"
       },
       "./dialog": {
         "types": "./dist/dialog.d.ts",
@@ -130,6 +163,10 @@
       "./label": {
         "types": "./dist/label.d.ts",
         "default": "./dist/label.js"
+      },
+      "./listbox": {
+        "types": "./dist/listbox.d.ts",
+        "default": "./dist/listbox.js"
       },
       "./menu": {
         "types": "./dist/menu.d.ts",
@@ -187,6 +224,10 @@
         "types": "./dist/segmented-control.d.ts",
         "default": "./dist/segmented-control.js"
       },
+      "./select": {
+        "types": "./dist/select.d.ts",
+        "default": "./dist/select.js"
+      },
       "./separator": {
         "types": "./dist/separator.d.ts",
         "default": "./dist/separator.js"
@@ -230,6 +271,10 @@
       "./tooltip": {
         "types": "./dist/tooltip.d.ts",
         "default": "./dist/tooltip.js"
+      },
+      "./tree": {
+        "types": "./dist/tree.d.ts",
+        "default": "./dist/tree.js"
       }
     }
   },

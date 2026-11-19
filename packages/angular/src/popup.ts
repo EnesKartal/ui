@@ -7,6 +7,7 @@ import {
   useFeature,
   useOutsidePart,
   usePart,
+  type Joined,
   type PopupContainer,
   type PrimitiveHandle,
 } from "./use-primitive"
@@ -72,8 +73,10 @@ function usePopupTrigger<P extends Primitive, S extends SlotName<P>>(
     inside,
     shortcut,
     feature,
+    joined,
   }: {
     controller: () => object | undefined
+    joined?: Joined
     plain?: () => Attrs
     inside?: Type<PopupTriggerScope<P>>
     shortcut?: () => string | undefined
@@ -97,12 +100,36 @@ function usePopupTrigger<P extends Primitive, S extends SlotName<P>>(
     }
     return handle
   }
-  return useOutsidePart(owner, slot, props, {}, plain)
+  return useOutsidePart(owner, slot, props, { joined }, plain)
+}
+
+// A part of the popup that can sit inside its trigger, like a select's value:
+// a trigger outside the popup brings the popup it's connected to.
+function useTriggerPart<P extends Primitive, S extends SlotName<P>>(
+  scope: Type<PopupRoot<P>>,
+  inside: Type<PopupTriggerScope<P>>,
+  slot: S,
+  props?: () => PropsOf<P, S>,
+  feature?: Feature
+) {
+  const root = inject(scope, { optional: true })
+  const trigger = inject(inside, { optional: true })
+  return useOutsidePart(
+    () => {
+      const handle = (trigger?.root() ?? root ?? undefined)?.handle
+      if (handle && feature) {
+        useFeature(handle, feature)
+      }
+      return handle
+    },
+    slot,
+    props
+  )
 }
 
 // A content part: it renders into its own container, else its root's, else
-// the one the popup around it renders into. `viewport` is for a popup that
-// can present as a sheet.
+// the popup's around it. `viewport` is for a popup that can present as a
+// sheet, and `header` hears the element an input moves into at a sheet's top.
 function usePopupContent<P extends Primitive, S extends SlotName<P>>(
   root: PopupRoot<P>,
   slot: S,
@@ -111,10 +138,12 @@ function usePopupContent<P extends Primitive, S extends SlotName<P>>(
     container,
     inline,
     viewport,
+    header,
   }: {
     container: () => PopupContainer
     inline?: () => boolean | undefined
     viewport?: boolean
+    header?: (el: HTMLElement | null) => void
   }
 ) {
   const popup = inject(PopupScope, { self: true })
@@ -124,6 +153,10 @@ function usePopupContent<P extends Primitive, S extends SlotName<P>>(
     viewport: viewport
       ? () => root.handle.instance.part("viewport" as S, {} as PropsOf<P, S>)
       : undefined,
+    header: header && {
+      part: () => root.handle.instance.part("header" as S, {} as PropsOf<P, S>),
+      record: header,
+    },
   })
 }
 
@@ -174,4 +207,5 @@ export {
   usePopupRoot,
   usePopupShortcut,
   usePopupTrigger,
+  useTriggerPart,
 }

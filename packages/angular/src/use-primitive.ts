@@ -79,18 +79,34 @@ function usePrimitive<P extends Primitive>(
   let instance: ReturnType<P> | undefined
   const features = new Set<Feature>()
   // Inputs arrive after the constructor, so the instance waits for a reader.
+  let destroyed = false
+  // Tearing down can still report a change, like a highlight that's lost its
+  // item, and by then the directive's outputs are destroyed too.
+  const whileAlive = (given: OptionsOf<P>) => {
+    const next: Record<string, unknown> = { ...given, id }
+    for (const [key, value] of Object.entries(next)) {
+      if (typeof value === "function" && /^on[A-Z]/.test(key)) {
+        next[key] = (...args: unknown[]) =>
+          destroyed ? undefined : value(...args)
+      }
+    }
+    return next as OptionsOf<P>
+  }
   const make = () => {
     if (!instance) {
-      instance = primitive({ ...untracked(options), id }) as ReturnType<P>
+      instance = primitive(whileAlive(untracked(options))) as ReturnType<P>
       features.forEach((feature) => instance?.use(feature))
     }
     return instance
   }
   effect(() => {
     const next = options()
-    untracked(() => make().setOptions({ ...next, id }))
+    untracked(() => make().setOptions(whileAlive(next)))
   })
-  inject(DestroyRef).onDestroy(() => instance?.destroy())
+  inject(DestroyRef).onDestroy(() => {
+    destroyed = true
+    instance?.destroy()
+  })
   const handle: PrimitiveHandle<P> = {
     get instance() {
       return make()
@@ -104,6 +120,24 @@ function usePrimitive<P extends Primitive>(
     instance?.use(feature)
   })
   return handle
+}
+
+// The instance's whole state as a signal, for what no part's state carries,
+// like the items a data list renders.
+function useStore<P extends Primitive>(owner: PrimitiveHandle<P>) {
+  const changes = signal(0)
+  effect((onCleanup) =>
+    onCleanup(
+      owner.instance.subscribe(() => changes.update((count) => count + 1))
+    )
+  )
+  return computed(
+    () => {
+      changes()
+      return owner.instance.get() as TypesOf<P>["state"]
+    },
+    { equal: () => false }
+  )
 }
 
 const adding = new WeakMap<object, (feature: Feature) => void>()
@@ -172,6 +206,11 @@ type PartOptions = {
   portal?: () => PopupContainer | false
   /** A popup's `viewport` part. While it's present, the element sits in a full-screen element made for it, which is what moves into the container. */
   viewport?: () => Parameters<typeof partAttrs>[0] | undefined
+  /** A popup's `header` part. While it's present, an element made for it sits at the element's top, and `record` hears which. */
+  header?: {
+    part: () => Parameters<typeof partAttrs>[0] | undefined
+    record: (el: HTMLElement | null) => void
+  }
 }
 
 // What an element shows while the component it belongs to isn't on the page yet.
@@ -183,7 +222,7 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
   ownerOf: () => PrimitiveHandle<P> | undefined,
   slot: S,
   props: () => PropsOf<P, S>,
-  { joined, portal, viewport }: PartOptions,
+  { joined, portal, viewport, header }: PartOptions,
   plain?: Plain
 ) {
   const host =
@@ -237,6 +276,26 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
     | undefined
   let moved: { el: HTMLElement; home: Comment } | undefined
   let frame: HTMLElement | undefined
+  let top: HTMLElement | undefined
+
+  // A sheet's header, where an input moves while its popup is one.
+  const head = (el: HTMLElement | undefined) => {
+    const current = el && header?.part()
+    if (!el || !current || !isPresent(current)) {
+      if (top) {
+        header?.record(null)
+        top.remove()
+        top = undefined
+      }
+      return
+    }
+    top ??= el.ownerDocument.createElement("div")
+    applyAttrs(top, partAttrs(current), `${channel}:header`)
+    if (top.parentNode !== el) {
+      el.prepend(top)
+      header?.record(top)
+    }
+  }
 
   const goHome = () => {
     const current = moved
@@ -356,6 +415,9 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
     if (!present) {
       goHome()
     }
+    if (header) {
+      untracked(() => head(inPage && present ? el : undefined))
+    }
     if (inPage && present) {
       if (portal || viewport) {
         untracked(() => move(el))
@@ -388,6 +450,7 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
       element.set(root ?? null)
     } else if (!present && view) {
       unbind()
+      head(undefined)
       goHome()
       container.clear()
       view = undefined
@@ -461,6 +524,7 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
 
   inject(DestroyRef).onDestroy(() => {
     unbind()
+    head(undefined)
     goHome()
     if (claimed?.lone) {
       release(claimed.instance, slot, own)
@@ -487,7 +551,15 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
     const current = part()
     return !!current && isPresent(current)
   })
-  return { present, state }
+  const attrs = computed(
+    () => {
+      changes()
+      const current = part()
+      return current ? partAttrs(current) : {}
+    },
+    { equal: () => false }
+  )
+  return { attrs, present, state }
 }
 
 /**
@@ -530,4 +602,5 @@ export {
   useOutsidePart,
   usePart,
   usePrimitive,
+  useStore,
 }

@@ -102,6 +102,7 @@ export {
   ActionEmitter,
   type Change,
   emitChange,
+  emitWaiting,
   EventActionEmitter,
   ListenedEmitter,
   ValueActionEmitter,
