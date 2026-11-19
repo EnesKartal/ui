@@ -1004,10 +1004,22 @@ function createPopupLayer<
         return
       }
       const target = plan === "popup" ? shown.el : resolve?.()
-      if (target) {
-        moveFocus(target)
-        selectFilled(target)
+      if (!target) {
+        return
       }
+      moveFocus(target)
+      const active = activeElement()
+      // A target that can't take focus, like a disabled button, would leave
+      // focus behind the popup, so the content takes it.
+      if (
+        !active ||
+        (!composedContains(target, active) &&
+          !composedContains(shown.el, active))
+      ) {
+        moveFocus(shown.el)
+        return
+      }
+      selectFilled(target)
     }
     if (openedOnPress) {
       // The pointer can reach an item before the frame, which focuses it.
