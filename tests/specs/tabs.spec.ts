@@ -93,16 +93,16 @@ test.describe("selection", () => {
   test("without a default value, the first render already selects the first enabled tab", async ({
     page,
     open,
-    framework,
   }) => {
-    test.skip(
-      framework === "angular",
-      "Angular renders into the page, so its first render adds the panel."
-    )
     await page.addInitScript(() => {
       const changes: string[] = []
       ;(window as unknown as { __tabChanges: string[] }).__tabChanges = changes
+      // A framework that renders into the page adds the panel on its own, in
+      // the same batch as the tabs. One added later came after the first render.
+      let rendered = false
       new MutationObserver((records) => {
+        const first = !rendered
+        rendered ||= document.querySelector('[role="tab"]') !== null
         for (const record of records) {
           const el = record.target as Element
           const role = el.getAttribute("role")
@@ -118,6 +118,7 @@ test.describe("selection", () => {
           }
           for (const node of record.addedNodes) {
             if (
+              !first &&
               node instanceof Element &&
               node.getAttribute("role") === "tabpanel"
             ) {
