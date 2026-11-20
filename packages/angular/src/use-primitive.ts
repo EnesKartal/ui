@@ -246,7 +246,8 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
   slot: S,
   props: () => PropsOf<P, S>,
   { joined, portal, viewport, header }: PartOptions,
-  plain?: Plain
+  plain?: Plain,
+  unsettled?: StateOf<P, S>
 ) {
   const host =
     inject<ElementRef<HTMLElement | Comment>>(ElementRef).nativeElement
@@ -256,6 +257,17 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
   const renders = inject(Renders)
   const channel = `render:${own}`
   let claimed: { instance: object; lone: boolean } | undefined
+  // Angular evaluates a class binding on the part's own element before it sets
+  // the inputs, and reading a required one throws until then.
+  const settled = signal(!unsettled)
+  const ready = () => {
+    try {
+      untracked(() => (ownerOf()?.instance, props()))
+      return true
+    } catch {
+      return false
+    }
+  }
   // Core keeps one part per key and gives it the new props, so the same
   // object comes back and only this computed can say that it changed.
   const part = computed(
@@ -542,6 +554,7 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
   }
 
   effect((onCleanup) => {
+    untracked(() => settled.set(true))
     const current = keyed()
     selection()
     if (!current) {
@@ -624,6 +637,9 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
 
   const state = computed(
     () => {
+      if (!settled() && !ready()) {
+        return unsettled
+      }
       stateChanges()
       const current = part()
       return current && (partState(current) as StateOf<P, S>)
@@ -666,7 +682,9 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
     () => owner,
     slot,
     props,
-    options
+    options,
+    undefined,
+    {} as StateOf<P, S>
   )
   return { element, present, state: state as Signal<StateOf<P, S>> }
 }
