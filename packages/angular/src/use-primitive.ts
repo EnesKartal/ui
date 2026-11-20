@@ -636,6 +636,7 @@ export {
   type PartOptions,
   type PopupContainer,
   type PrimitiveHandle,
+  Renders,
   useFeature,
   useId,
   useOutsidePart,

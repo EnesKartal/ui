@@ -1,6 +1,7 @@
 import {
   Component,
   Directive,
+  effect,
   ElementRef,
   HostAttributeToken,
   inject,
@@ -30,6 +31,7 @@ import {
   type ToastContent,
 } from "./toast-context"
 import {
+  Renders,
   useId,
   usePart,
   usePrimitive,
@@ -279,6 +281,21 @@ class ToastRegion {
     inject<ElementRef<HTMLElement>>(ElementRef).nativeElement.removeAttribute(
       "aria-label"
     )
+    // A toast renders in the task that showed it, so the region's shortcut reaches it right away.
+    const renders = inject(Renders)
+    let count = 0
+    effect((onCleanup) => {
+      const { instance } = this.handle
+      onCleanup(
+        instance.subscribe(() => {
+          const next = instance.get().items.length
+          if (next !== count) {
+            count = next
+            renders.soon()
+          }
+        })
+      )
+    })
   }
 }
 

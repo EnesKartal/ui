@@ -49,7 +49,7 @@ import {
             <svg lucideChevronDown></svg>
           </button>
           <div *uiNavigationMenuContent>
-            <nav uiNavigationMenu orientation="vertical">
+            <div uiNavigationMenu orientation="vertical">
               <ul uiNavigationMenuList>
                 @for (group of groups; track group.value) {
                   <li uiNavigationMenuItem [value]="group.value">
@@ -76,7 +76,7 @@ import {
                   </li>
                 }
               </ul>
-            </nav>
+            </div>
           </div>
         </li>
       </ul>

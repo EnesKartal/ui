@@ -125,7 +125,7 @@ Resting the pointer on a trigger opens its panel. With `openOnHover` set to fals
 
 ## Nested
 
-A navigation menu inside another menu's content is a submenu. It renders a plain element instead of a second `<nav>` landmark, gets `data-nested`, and closes with its parent when the parent moves on to another item. Without a viewport of its own, its panels open beside its triggers. Pressing a link in it closes every menu.
+A navigation menu inside another menu's content is a submenu. Put it on a `<div>`, so the page keeps one `<nav>` landmark. It gets `data-nested` and closes with its parent when the parent moves on to another item. Without a viewport of its own, its panels open beside its triggers. Pressing a link in it closes every menu.
 
 <ComponentExample
   name="navigation-menu/nested"
