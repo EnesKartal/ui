@@ -6,7 +6,7 @@ ui-sdk is a TypeScript library of UI behaviors for building interfaces. It isn't
 
 - **Behaviors** are the building blocks. Each is one thing an interface does, like moving focus with the arrow keys (`createRovingFocus`).
 - **Primitives** put one component's options, state, behaviors and parts together in a single definition (`definePrimitive`), with no styles.
-- **Adapters** render a primitive in React, Vue, Svelte, Solid and web components, with the same names everywhere (`createParts`). You write the markup and styles. State shows up as data attributes and CSS variables.
+- **Adapters** render a primitive in React, Vue, Svelte, Solid, web components and Angular, with the same names everywhere (`createParts`, and directives in Angular). You write the markup and styles. State shows up as data attributes and CSS variables.
 - **Checking.** `@ui-sdk/core/testing` checks the result against its WAI-ARIA pattern, in right to left and on the server.
 - **Agents** can operate a finished interface through `@ui-sdk/core/agent` (`snapshot`, `act`).
 

@@ -16,7 +16,7 @@ Everything you need to work on ui-sdk, for people and agents alike. Start with t
 
 ## The repo
 
-- `packages/core`: the behaviors, primitives and kernel, with no framework, and in `skills/` the skill that ships to people building with ui-sdk (`ui-sdk`). `packages/react`, `vue`, `svelte`, `solid` and `web` render them.
+- `packages/core`: the behaviors, primitives and kernel, with no framework, and in `skills/` the skill that ships to people building with ui-sdk (`ui-sdk`). `packages/react`, `vue`, `svelte`, `solid`, `web` and `angular` render them.
 - `apps/docs`: the docs site, which also serves the compiled examples.
 - `apps/playground`: the fixtures the browser specs open, one folder per component and framework.
 - `examples`: every docs example, in every framework, compiled by Vite into `apps/docs/public/examples`.

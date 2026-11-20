@@ -101,7 +101,8 @@
   },
   "sideEffects": false,
   "files": [
-    "dist"
+    "dist",
+    "docs"
   ],
   "publishConfig": {
     "exports": {
