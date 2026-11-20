@@ -20,6 +20,8 @@ PLAYGROUND_PORT=5310 ../scripts/test-slot.sh npx playwright test --project react
 
 A file filter is a regular expression matched against the path, so `specs/menu` runs `menu.a11y.spec.ts`, `menu.counts.spec.ts` and `menubar.spec.ts` too. Name the whole file, like `specs/menu.spec.ts`, for the base spec only. `pnpm test` from the root runs `playwright test` in `tests/` with every project, which is the whole matrix: pass `--project` to narrow it.
 
+Angular's fixtures (`apps/playground/src/fixtures/<name>/angular.ts`) cover the same specs. They need the Angular compiler, which the playground doesn't build with yet, so it leaves them out and there is no `angular` project.
+
 ## At a glance
 
 | Kind                                  | Files                                                             | Runs in                                                                              | CI tier   |
