@@ -1,6 +1,7 @@
 import {
   afterRenderEffect,
   APP_ID,
+  ApplicationRef,
   computed,
   DestroyRef,
   effect,
@@ -48,6 +49,28 @@ class Ids {
 
   next() {
     return `ui-sdk-${this.#app}-${this.#count++}`
+  }
+}
+
+// Angular renders a frame after a change. A part that comes or goes renders
+// in the task that changed it, so a key pressed right after a press that
+// opened a popup reaches the popup.
+@Injectable({ providedIn: "root" })
+class Renders {
+  readonly #app = inject(ApplicationRef)
+  #queued = false
+
+  soon() {
+    if (this.#queued) {
+      return
+    }
+    this.#queued = true
+    queueMicrotask(() => {
+      this.#queued = false
+      if (!this.#app.destroyed) {
+        this.#app.tick()
+      }
+    })
   }
 }
 
@@ -230,6 +253,7 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
   const template = inject(TemplateRef, { optional: true })
   const container = template ? inject(ViewContainerRef) : undefined
   const own = inject(Ids).next()
+  const renders = template ? inject(Renders) : undefined
   const channel = `render:${own}`
   let claimed: { instance: object; lone: boolean } | undefined
   // Core keeps one part per key and gives it the new props, so the same
@@ -486,6 +510,8 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
         }
         if (!template) {
           sync()
+        } else if (isPresent(current) !== !!view) {
+          renders?.soon()
         }
         changes.update((count) => count + 1)
       })
