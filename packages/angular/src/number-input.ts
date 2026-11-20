@@ -1,4 +1,5 @@
 import {
+  computed,
   Directive,
   inject,
   input,
@@ -9,12 +10,14 @@ import {
   numberInput,
   type NumberInputOptions,
   type NumberInputScrubAreaProps,
+  type NumberInputState,
 } from "@ui-sdk/core/number-input"
+import { useControllerEntry, useControllerTarget } from "./controller-target"
 import { optionalBoolean, optionalNumber } from "./inputs"
 import { emitChange } from "./outputs"
 import { useFieldControl } from "./field-context"
 import { useNativeInput } from "./native-input"
-import { usePart, usePrimitive } from "./use-primitive"
+import { useOutsidePart, usePart, usePrimitive } from "./use-primitive"
 
 /**
  * What `(beforeValueChange)` emits: the value about to be set, why, and `cancel()` to keep the current one.
@@ -115,6 +118,7 @@ class NumberInput {
 
   constructor() {
     useNativeInput(this.handle, "hidden-input")
+    useControllerEntry(() => this.controller(), this)
   }
 }
 
@@ -179,6 +183,15 @@ class NumberInputDecrement {
   })).state
 }
 
+// A scrub area's state until the number input its controller names mounts.
+const unconnected: NumberInputState = {
+  value: null,
+  disabled: false,
+  readOnly: false,
+  required: false,
+  scrubbing: false,
+}
+
 /**
  * Drag across it to change the value. It works anywhere inside the number input, and outside it through `controller`, like an icon in a toolbar.
  * @experimental
@@ -193,12 +206,28 @@ class NumberInputScrubArea {
     input()
   /** How far the pointer moves for one step, in CSS pixels. */
   readonly pixelsPerStep = input(undefined, { transform: optionalNumber })
+  /** The number input it drives when it isn't inside one. */
+  readonly controller: InputSignal<NumberInputScrubAreaProps["controller"]> =
+    input()
 
+  readonly #numberInput = useControllerTarget(
+    () => this.controller(),
+    inject(NumberInput, { optional: true }) ?? undefined
+  )
+  readonly #part = useOutsidePart(
+    () => this.#numberInput()?.handle,
+    "scrub-area",
+    () => ({
+      orientation: this.orientation(),
+      pixelsPerStep: this.pixelsPerStep(),
+    }),
+    {},
+    () => ({})
+  )
   /** The part's state, as a signal. */
-  readonly state = usePart(inject(NumberInput).handle, "scrub-area", () => ({
-    orientation: this.orientation(),
-    pixelsPerStep: this.pixelsPerStep(),
-  })).state
+  readonly state = computed<NumberInputState>(
+    () => this.#part.state() ?? unconnected
+  )
 }
 
 /**

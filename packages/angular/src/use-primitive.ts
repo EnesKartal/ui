@@ -298,6 +298,7 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
   // renders it, and core measures content when it binds.
   let fresh = false
   let shown = false
+  let destroyed = false
   let bound:
     | {
         el: HTMLElement
@@ -407,7 +408,7 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
   // change reaches the page without change detection.
   const sync = (rendering = true) => {
     const el = untracked(element)
-    if (!el) {
+    if (!el || destroyed) {
       return
     }
     const current = untracked(part)
@@ -607,6 +608,8 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
   })
 
   inject(DestroyRef).onDestroy(() => {
+    // Unbinding can change state, and a part that hears it must not bind again.
+    destroyed = true
     unbind()
     head(undefined)
     goHome()
