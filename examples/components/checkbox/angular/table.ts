@@ -21,7 +21,7 @@ import {
       [(value)]="selected"
       aria-label="Team members"
       (beforeValueChange)="
-        log($event.value.length + ' of ' + people.length + ' selected()')
+        log($event.value.length + ' of ' + people.length + ' selected')
       "
       [allValues]="people.map((person) => person.id)"
     >

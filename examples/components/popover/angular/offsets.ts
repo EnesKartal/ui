@@ -99,7 +99,9 @@ class Example {
 
   setOffset(name: Name, change: SelectValueChange) {
     const next = change.value
-    if (next) this.offsets.update((offsets) => ({ ...offsets, [name]: next }))
+    if (next) {
+      this.offsets.update((offsets) => ({ ...offsets, [name]: next }))
+    }
   }
 }
 

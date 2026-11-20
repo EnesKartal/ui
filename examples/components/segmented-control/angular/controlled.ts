@@ -21,7 +21,7 @@ import {
         aria-label="Range"
         [(value)]="value"
         (beforeValueChange)="
-          log('value(): ' + $event.value + ' (' + $event.reason + ')')
+          log('value: ' + $event.value + ' (' + $event.reason + ')')
         "
         [controller]="range"
       >
