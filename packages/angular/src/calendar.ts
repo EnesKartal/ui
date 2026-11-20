@@ -1,8 +1,11 @@
 import {
+  afterRenderEffect,
   Component,
   computed,
   contentChild,
   Directive,
+  effect,
+  ElementRef,
   inject,
   input,
   numberAttribute,
@@ -265,6 +268,27 @@ class CalendarWeekdays {
 class CalendarWeeks {
   protected readonly grid = inject(CalendarGridContext)
   protected readonly day = contentChild(TemplateRef)
+
+  constructor() {
+    const host: HTMLElement = inject(ElementRef).nativeElement
+    let focused: HTMLElement | null = null
+    effect(() => {
+      this.grid.state()
+      const active = host.ownerDocument.activeElement
+      focused = active && host.contains(active) ? (active as HTMLElement) : null
+    })
+    // Angular moves a week that stays by taking its row out of the page, which
+    // drops focus from a day in it. The day takes focus back.
+    afterRenderEffect(() => {
+      this.grid.state()
+      const moved = focused
+      focused = null
+      const { activeElement, body } = host.ownerDocument
+      if (moved?.isConnected && activeElement === body) {
+        moved.focus({ preventScroll: true })
+      }
+    })
+  }
 }
 
 /**

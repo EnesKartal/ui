@@ -1,19 +1,26 @@
 import { effect, ElementRef, inject, signal, TemplateRef } from "@angular/core"
 
-// Fills an element the author left empty with text from its part's state,
-// like a field error with the browser's message. `marker` is the attribute
-// that says the text is ours, so hydration keeps updating what the server wrote.
-function useText(text: () => string | undefined, marker = "data-text") {
-  const el = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement
+// Fills an element the author left empty with its part's text, like a field
+// error's browser message. `marker` says the text is ours, so hydration keeps
+// updating it. The `*` form fills the element `rendered` reads.
+function useText(
+  text: () => string | undefined,
+  marker = "data-text",
+  rendered?: () => HTMLElement | null
+) {
+  const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement
+  const template = inject(TemplateRef, { optional: true })
   if (
-    el.nodeType !== 1 ||
-    el.localName === "input" ||
-    inject(TemplateRef, { optional: true })
+    template ? !rendered : host.nodeType !== 1 || host.localName === "input"
   ) {
     return
   }
   effect(() => {
+    const el = template ? rendered?.() : host
     const next = text() ?? ""
+    if (!el) {
+      return
+    }
     if (!el.hasAttribute(marker)) {
       if (el.childNodes.length) {
         return

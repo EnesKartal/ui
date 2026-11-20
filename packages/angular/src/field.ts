@@ -142,20 +142,21 @@ class FieldError {
 
   readonly #field = inject(FieldContext, { optional: true })
   readonly #value = useId()
-  /** The error's state, as a signal. Undefined outside a Field. */
-  readonly state = this.#field
+  readonly #part = this.#field
     ? usePart(this.#field.handle, "error", () => ({
         value: this.#value,
         match: this.#match(),
-      })).state
-    : useOutside("error", () =>
-        fieldOutsideErrorShown({ match: this.#match() })
-      )
+      }))
+    : undefined
+  /** The error's state, as a signal. Undefined outside a Field. */
+  readonly state =
+    this.#part?.state ??
+    useOutside("error", () => fieldOutsideErrorShown({ match: this.#match() }))
 
   constructor() {
     const state = this.state
     if (state) {
-      useText(() => state().message, "data-message")
+      useText(() => state().message, "data-message", this.#part?.element)
     }
   }
 

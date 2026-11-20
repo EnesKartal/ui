@@ -253,7 +253,7 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
   const template = inject(TemplateRef, { optional: true })
   const container = template ? inject(ViewContainerRef) : undefined
   const own = inject(Ids).next()
-  const renders = template ? inject(Renders) : undefined
+  const renders = inject(Renders)
   const channel = `render:${own}`
   let claimed: { instance: object; lone: boolean } | undefined
   // Core keeps one part per key and gives it the new props, so the same
@@ -405,7 +405,7 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
 
   // Core writes the attributes and binds the element itself, so a state
   // change reaches the page without change detection.
-  const sync = () => {
+  const sync = (rendering = true) => {
     const el = untracked(element)
     if (!el) {
       return
@@ -453,6 +453,12 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
       }
     }
     shown = present
+    // A part that left stays bound until Angular renders, as it does where a
+    // framework unmounts it, so what replaces it mounts in the same pass.
+    if (bound && !present && !rendering) {
+      renders.soon()
+      return
+    }
     const framed = untracked(isFramed)
     const reframed = !!bound && bound.framed !== framed
     if (
@@ -548,9 +554,9 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
           return
         }
         if (!template) {
-          sync()
+          sync(false)
         } else if (isPresent(current) !== !!view) {
-          renders?.soon()
+          renders.soon()
         }
         changes.update((count) => count + 1)
       })
@@ -637,7 +643,7 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
     },
     { equal: () => false }
   )
-  return { attrs, present, state }
+  return { attrs, element: element.asReadonly(), present, state }
 }
 
 /**
@@ -653,8 +659,13 @@ function usePart<P extends Primitive, S extends SlotName<P>>(
   props: () => PropsOf<P, S> = () => ({}) as PropsOf<P, S>,
   options: PartOptions = {}
 ) {
-  const { present, state } = bindPart(() => owner, slot, props, options)
-  return { present, state: state as Signal<StateOf<P, S>> }
+  const { element, present, state } = bindPart(
+    () => owner,
+    slot,
+    props,
+    options
+  )
+  return { element, present, state: state as Signal<StateOf<P, S>> }
 }
 
 // `usePart` for a part that may sit outside its component, like a trigger in
