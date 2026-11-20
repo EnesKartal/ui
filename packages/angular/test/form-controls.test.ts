@@ -82,7 +82,7 @@ import { mount } from "./mount"
         <div uiSliderControl>
           <div uiSliderTrack>
             <div uiSliderThumb [index]="0" aria-label="From"></div>
-            <div uiSliderThumb [index]="1" aria-label="To"></div>
+            <div uiSliderThumb [index]="1" [aria-label]="to()"></div>
           </div>
         </div>
       </div>
@@ -132,6 +132,7 @@ import { mount } from "./mount"
 })
 class Page {
   readonly volume = signal<number | number[]>(4)
+  readonly to = signal("To")
   readonly score = signal<number | null>(2)
   readonly view = signal<string | null>("list")
   readonly count = signal<number | null>(1)
@@ -169,7 +170,7 @@ describe("form controls", () => {
   })
 
   test("a range's thumbs take the names the author gave them", async () => {
-    const { host } = await mount(Page)
+    const { host, instance, settle } = await mount(Page)
     const inputs = host.querySelectorAll<HTMLInputElement>(
       "#range input[type=range]"
     )
@@ -179,6 +180,9 @@ describe("form controls", () => {
     expect(Array.from(inputs, (input) => input.value)).toEqual(["2", "8"])
     expect(host.querySelector("#range [uiSliderThumb][aria-label]")).toBeNull()
     expect(data(host)).toContainEqual(["range", "2/8"])
+    instance.to.set("Until")
+    await settle()
+    expect(inputs[1]!.getAttribute("aria-label")).toBe("Until")
   })
 
   test("a rating renders a radio per star and takes a press", async () => {

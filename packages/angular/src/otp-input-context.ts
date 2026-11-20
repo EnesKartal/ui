@@ -1,12 +1,15 @@
 import { Directive, ElementRef, inject, InjectionToken } from "@angular/core"
 import type { otpInput } from "@ui-sdk/core/otp-input"
 import { useFieldControl } from "./field-context"
+import { bindAttributes } from "./text"
 import { usePart, type PrimitiveHandle } from "./use-primitive"
 
 type OTPInputScope = {
   handle: PrimitiveHandle<typeof otpInput>
-  /** The attributes the author gave the root, which its input takes. */
-  named: Record<string, string>
+  /** The attributes the author wrote on the root, which its input takes. */
+  moved: Record<string, string>
+  /** The names the author bound on the root, which its input takes. */
+  named: () => Record<string, string | undefined>
 }
 
 const OTPInputScope = new InjectionToken<OTPInputScope>("ui-sdk otp input")
@@ -17,13 +20,14 @@ class OTPInputControl {
   constructor() {
     const root = inject(OTPInputScope)
     const el = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement
-    for (const [name, value] of Object.entries(root.named)) {
+    for (const [name, value] of Object.entries(root.moved)) {
       el.setAttribute(name, value)
     }
     const field = useFieldControl(() => ({
-      id: root.named["id"],
-      describedBy: root.named["aria-describedby"],
+      id: root.moved["id"],
+      describedBy: root.named()["aria-describedby"],
     }))
+    bindAttributes(el, root.named, (name) => name !== "aria-label" && !!field)
     usePart(root.handle, "control", undefined, { joined: field?.joined })
   }
 }

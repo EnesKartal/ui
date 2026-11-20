@@ -1,5 +1,6 @@
 import {
   Component,
+  computed,
   Directive,
   inject,
   input,
@@ -59,7 +60,7 @@ const inputAttributes = [
       provide: OTPInputScope,
       useFactory: () => {
         const root = inject(OTPInput)
-        return { handle: root.handle, named: root.named }
+        return { handle: root.handle, moved: root.moved, named: root.named }
       },
     },
   ],
@@ -67,8 +68,24 @@ const inputAttributes = [
 })
 class OTPInput {
   readonly #field = inject(FieldContext, { optional: true })
-  /** The attributes the author gave the root, which its input takes. */
-  readonly named = moveAttributes(inputAttributes)
+  /** The attributes the author wrote on the root, which its input takes. */
+  readonly moved = moveAttributes(inputAttributes)
+  /** Names the input. Bind it with `[aria-label]`. */
+  readonly ariaLabel = input<string>(undefined, { alias: "aria-label" })
+  /** The id of the element that names the input. Bind it with `[aria-labelledby]`. */
+  readonly ariaLabelledby = input<string>(undefined, {
+    alias: "aria-labelledby",
+  })
+  /** The id of the element that describes the input. Bind it with `[aria-describedby]`. */
+  readonly ariaDescribedby = input<string>(undefined, {
+    alias: "aria-describedby",
+  })
+  /** The names the author bound on the root, which its input takes. */
+  readonly named = computed(() => ({
+    "aria-label": this.ariaLabel(),
+    "aria-labelledby": this.ariaLabelledby(),
+    "aria-describedby": this.ariaDescribedby(),
+  }))
   /** Logs every state change with its reason to the console, in development builds. */
   readonly debug = input(undefined, { transform: optionalBoolean })
   /** The code, for a controlled input. */

@@ -1,6 +1,7 @@
 import { Directive, ElementRef, inject, InjectionToken } from "@angular/core"
 import type { slider } from "@ui-sdk/core/slider"
 import { useFieldControl } from "./field-context"
+import { bindAttributes } from "./text"
 import { usePart, type PrimitiveHandle } from "./use-primitive"
 
 type SliderThumbScope = {
@@ -8,7 +9,7 @@ type SliderThumbScope = {
   /** The props the thumb and its input share. */
   key: () => { index: number; id: string }
   /** The names the author gave the thumb, which its input takes. */
-  named: Record<string, string>
+  named: () => Record<string, string | undefined>
   /** Whether the input is the field's control: a range's root is instead. */
   inField: () => boolean
 }
@@ -23,13 +24,15 @@ class SliderThumbInput {
   constructor() {
     const thumb = inject(SliderThumbScope)
     const el = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement
-    for (const [name, value] of Object.entries(thumb.named)) {
-      el.setAttribute(name, value)
-    }
     const field = useFieldControl(() => ({
       id: field?.controlId(),
-      describedBy: thumb.named["aria-describedby"],
+      describedBy: thumb.named()["aria-describedby"],
     }))
+    bindAttributes(
+      el,
+      thumb.named,
+      (name) => name !== "aria-label" && !!field && thumb.inField()
+    )
     usePart(thumb.handle, "thumb-input", thumb.key, {
       joined: field && {
         ...field.joined,

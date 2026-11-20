@@ -129,8 +129,12 @@ class Slider {
   /** The slider's state, as a signal. */
   readonly state = usePart(this.handle, "root", undefined, {
     joined: this.#field && {
-      ...this.#field.joined,
       part: () => (this.#range() ? this.#field?.joined.part() : undefined),
+      // The field's control id is the first thumb's, so the group keeps its own.
+      merge: (own, control) => ({
+        ...this.#field?.joined.merge(own, control),
+        id: own["id"],
+      }),
     },
   }).state
 
@@ -200,12 +204,23 @@ class SliderThumb {
   /** Which value the thumb shows, from 0. Give each thumb of a range its own. */
   readonly index = input(undefined, { transform: optionalNumber })
 
+  /** Names the thumb's input. Bind it with `[aria-label]`. */
+  readonly ariaLabel = input<string>(undefined, { alias: "aria-label" })
+  /** The id of the element that names the thumb's input. Bind it with `[aria-labelledby]`. */
+  readonly ariaLabelledby = input<string>(undefined, {
+    alias: "aria-labelledby",
+  })
+  /** The id of the element that describes the thumb's input. Bind it with `[aria-describedby]`. */
+  readonly ariaDescribedby = input<string>(undefined, {
+    alias: "aria-describedby",
+  })
+
   /** The names the author gave the thumb, which its input takes. */
-  readonly named = moveAttributes([
-    "aria-label",
-    "aria-labelledby",
-    "aria-describedby",
-  ])
+  readonly named = computed(() => ({
+    "aria-label": this.ariaLabel(),
+    "aria-labelledby": this.ariaLabelledby(),
+    "aria-describedby": this.ariaDescribedby(),
+  }))
   /** The props the thumb and its input share. */
   readonly key = computed(() => {
     const index = this.index() ?? 0
@@ -213,6 +228,10 @@ class SliderThumb {
   })
   /** The thumb's state, as a signal. */
   readonly state = usePart(inject(Slider).handle, "thumb", this.key).state
+
+  constructor() {
+    moveAttributes(["aria-label", "aria-labelledby", "aria-describedby"])
+  }
 }
 
 /**

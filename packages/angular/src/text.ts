@@ -52,4 +52,27 @@ function moveAttributes(names: readonly string[]) {
   return moved
 }
 
-export { moveAttributes, useBlank, useText }
+// Keeps names the author bound on a part, like `[aria-label]`, on an element
+// inside it. `skip` leaves a name to whatever else writes it, like a field.
+function bindAttributes(
+  el: HTMLElement,
+  attributes: () => Record<string, string | undefined>,
+  skip: (name: string) => boolean
+) {
+  const written = new Set<string>()
+  effect(() => {
+    for (const [name, value] of Object.entries(attributes())) {
+      if (skip(name)) {
+        continue
+      }
+      if (value !== undefined) {
+        el.setAttribute(name, value)
+        written.add(name)
+      } else if (written.delete(name)) {
+        el.removeAttribute(name)
+      }
+    }
+  })
+}
+
+export { bindAttributes, moveAttributes, useBlank, useText }
