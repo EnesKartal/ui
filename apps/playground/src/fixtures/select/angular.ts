@@ -31,7 +31,7 @@ import {
   selectOptions,
   serializeForm,
 } from "../../../../../tests/fixtures/select"
-import { mountAngular, state } from "../../angular-mount"
+import { DATA, mountAngular, state } from "../../angular-mount"
 
 type Item = { value: string; label: string; disabled?: boolean }
 
@@ -277,7 +277,8 @@ class Fixture {
     container?: HTMLElement | null
   } = selectOptions()
   readonly wrapped = new URLSearchParams(location.search).has("wrapped")
-  readonly fromData = this.options.long || this.options.recent || this.wrapped
+  readonly fromData =
+    inject(DATA) || this.options.long || this.options.recent || this.wrapped
   readonly list = state<Item[]>(selectFixture.items)
   readonly long = this.options.long ? longItems() : []
   readonly items = computed<ListData>(() => {

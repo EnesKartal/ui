@@ -1,4 +1,4 @@
-import { Component, input } from "@angular/core"
+import { Component, inject, input } from "@angular/core"
 import {
   createTreeController,
   Tree,
@@ -16,7 +16,7 @@ import {
   treeFixture,
   type TreeFixtureItem,
 } from "../../../../../tests/fixtures/tree"
-import { mountAngular, state } from "../../angular-mount"
+import { DATA, mountAngular, state } from "../../angular-mount"
 
 @Component({
   selector: "[fixtureItems]",
@@ -72,6 +72,7 @@ class Items {
         uiTree
         class="tree"
         [attr.aria-label]="f.label"
+        [items]="data ? f.items : undefined"
         [controller]="controller"
         [mode]="options.mode"
         [defaultValue]="options.defaultValue"
@@ -100,6 +101,7 @@ class Items {
 })
 class Fixture {
   readonly f = treeFixture
+  readonly data = inject(DATA)
   readonly describe = describeTree
   readonly controller = createTreeController()
   readonly options = treeOptions()

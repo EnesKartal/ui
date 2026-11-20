@@ -39,7 +39,7 @@ import {
 } from "../../../../../tests/fixtures/combobox"
 import { onItemsChange } from "../../../../../tests/fixtures/items"
 import { longItems, serializeForm } from "../../../../../tests/fixtures/select"
-import { mountAngular, state } from "../../angular-mount"
+import { DATA, mountAngular, state } from "../../angular-mount"
 
 type Item = {
   value: string
@@ -284,7 +284,8 @@ class Fixture {
     modal?: false
   } = comboboxOptions()
   readonly loads = this.options.async || this.options.pages
-  readonly fromData = this.loads || this.options.long || this.options.recent
+  readonly fromData =
+    inject(DATA) || this.loads || this.options.long || this.options.recent
   readonly remote = useAsyncOptions<Item>(
     this.options.pages ? searchCountryPages : searchCountries,
     { immediate: this.loads }

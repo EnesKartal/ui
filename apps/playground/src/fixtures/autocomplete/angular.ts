@@ -28,7 +28,7 @@ import {
 } from "../../../../../tests/fixtures/autocomplete"
 import { onItemsChange } from "../../../../../tests/fixtures/items"
 import { serializeForm } from "../../../../../tests/fixtures/select"
-import { mountAngular, state } from "../../angular-mount"
+import { DATA, mountAngular, state } from "../../angular-mount"
 
 type Item = {
   value: string
@@ -203,7 +203,7 @@ class Fixture {
     defaultValue?: string
     container?: HTMLElement | null
   } = autocompleteOptions()
-  readonly fromData = this.options.async || this.options.recent
+  readonly fromData = inject(DATA) || this.options.async || this.options.recent
   readonly remote = useAsyncOptions(searchFruits, {
     immediate: this.options.async,
   })

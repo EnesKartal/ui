@@ -1,5 +1,6 @@
 import {
   createComponent,
+  InjectionToken,
   provideZonelessChangeDetection,
   signal,
   type ApplicationRef,
@@ -8,6 +9,9 @@ import {
 import { createApplication } from "@angular/platform-browser"
 
 const apps = new Set<ApplicationRef>()
+
+// Whether the fixture renders from `items`, as its `angular-data.ts` asks.
+const DATA = new InjectionToken<boolean>("data")
 let flushing = false
 
 /**
@@ -34,9 +38,16 @@ function state<T>(initial: T) {
 
 // The fixture's component takes the root as its host, so the page has the
 // same elements as in the other frameworks.
-async function mountAngular(component: Type<unknown>, root: HTMLElement) {
+async function mountAngular(
+  component: Type<unknown>,
+  root: HTMLElement,
+  { data = false } = {}
+) {
   const app = await createApplication({
-    providers: [provideZonelessChangeDetection()],
+    providers: [
+      provideZonelessChangeDetection(),
+      { provide: DATA, useValue: data },
+    ],
   })
   apps.add(app)
   const ref = createComponent(component, {
@@ -51,4 +62,4 @@ async function mountAngular(component: Type<unknown>, root: HTMLElement) {
   }
 }
 
-export { mountAngular, state }
+export { DATA, mountAngular, state }

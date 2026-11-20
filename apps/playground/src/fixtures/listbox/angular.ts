@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from "@angular/common"
-import { Component, DestroyRef, inject } from "@angular/core"
+import { Component, computed, DestroyRef, inject } from "@angular/core"
 import {
   createListboxController,
   Listbox,
@@ -18,10 +18,11 @@ import {
   listboxFixture,
   type ListboxFixtureItem,
   listboxOptions,
+  listboxData,
   longToppings,
 } from "../../../../../tests/fixtures/listbox"
 import { serializeForm } from "../../../../../tests/fixtures/select"
-import { mountAngular, state } from "../../angular-mount"
+import { DATA, mountAngular, state } from "../../angular-mount"
 
 type Value = string | string[] | null
 
@@ -51,6 +52,7 @@ type Value = string | string[] | null
             [attr.aria-label]="f.label"
             [name]="f.name"
             [controller]="controller"
+            [items]="items()"
             [value]="options.controlled ? value() : undefined"
             [defaultValue]="
               options.controlled ? undefined : options.defaultValue
@@ -133,6 +135,16 @@ class Fixture {
   } = listboxOptions()
   readonly long = longToppings()
   readonly list = state<ListboxFixtureItem[]>(listboxFixture.items)
+  readonly data = inject(DATA)
+  readonly items = computed(() => {
+    if (!this.data) {
+      return undefined
+    }
+    if (this.options.long) {
+      return this.long
+    }
+    return this.options.grouped ? listboxData(true) : this.list()
+  })
   readonly value = state<Value>(
     this.options.defaultValue ?? (this.options.multiple ? [] : null)
   )

@@ -1,4 +1,4 @@
-import { Component, computed, input } from "@angular/core"
+import { Component, computed, inject, input } from "@angular/core"
 import {
   Command,
   type CommandAction,
@@ -18,12 +18,13 @@ import {
   type CommandValueChange,
 } from "@ui-sdk/angular/command"
 import {
+  commandData,
   commandFixture,
   commandOptions,
   runAction,
 } from "../../../../../tests/fixtures/command"
 import { longItems } from "../../../../../tests/fixtures/select"
-import { mountAngular, state } from "../../angular-mount"
+import { DATA, mountAngular, state } from "../../angular-mount"
 
 type FixtureItem = {
   value: string
@@ -221,7 +222,11 @@ class Fixture {
     filter?: "contains" | "startsWith" | "fuzzy"
     status?: "loading"
   } = commandOptions()
-  readonly items = this.options.long ? longItems() : undefined
+  readonly items = this.options.long
+    ? longItems()
+    : inject(DATA)
+      ? commandData()
+      : undefined
   readonly action = state("")
   readonly lastHighlight = state("")
 
