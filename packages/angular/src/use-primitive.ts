@@ -270,6 +270,9 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
   }
   let view: EmbeddedViewRef<unknown> | undefined
   let inPage = false
+  // A view created after the first render has no content until Angular
+  // renders it, and core measures content when it binds.
+  let fresh = false
   let shown = false
   let bound:
     | { el: HTMLElement; part: unknown; joined: unknown; unbind: () => void }
@@ -393,6 +396,14 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
         el.removeAttribute("hidden")
       }
       applyAttrs(el, attrs, channel)
+      // A bare `disabled` in the template stays on the element, where it
+      // would take a part that's disabled but focusable out of the tab order.
+      if (
+        attrs["aria-disabled"] === "true" &&
+        attrs["disabled"] === undefined
+      ) {
+        el.removeAttribute("disabled")
+      }
     } else {
       if (shown) {
         applyAttrs(el, attrs, channel)
@@ -418,7 +429,7 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
     if (header) {
       untracked(() => head(inPage && present ? el : undefined))
     }
-    if (inPage && present) {
+    if (inPage && present && !fresh) {
       if (portal || viewport) {
         untracked(() => move(el))
       }
@@ -444,6 +455,7 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
     const present = current ? isPresent(current) : true
     if (present && !view) {
       view = container.createEmbeddedView(template, context)
+      fresh = true
       const root = view.rootNodes.find(
         (node: Node): node is HTMLElement => node.nodeType === 1
       )
@@ -519,6 +531,7 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
   afterRenderEffect(() => {
     element()
     inPage = true
+    fresh = false
     untracked(sync)
   })
 

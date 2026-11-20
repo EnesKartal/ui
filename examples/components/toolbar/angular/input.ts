@@ -2,6 +2,7 @@ import { Component } from "@angular/core"
 import { LucideMinus, LucidePlus } from "@lucide/angular"
 import {
   NumberInput,
+  NumberInputControl,
   NumberInputDecrement,
   NumberInputGroup,
   NumberInputIncrement,
@@ -15,6 +16,7 @@ import {
 @Component({
   imports: [
     NumberInput,
+    NumberInputControl,
     NumberInputDecrement,
     NumberInputGroup,
     NumberInputIncrement,
@@ -31,10 +33,7 @@ import {
           <button uiNumberInputDecrement aria-label="Decrease font size">
             <svg lucideMinus></svg>
           </button>
-          <NumberInputControl
-            uiToolbarInput
-            aria-label="Font size"
-          ></NumberInputControl>
+          <input uiNumberInputControl uiToolbarInput aria-label="Font size" />
           <button uiNumberInputIncrement aria-label="Increase font size">
             <svg lucidePlus></svg>
           </button>

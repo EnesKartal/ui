@@ -11,6 +11,7 @@ import { mount } from "./mount"
     <button uiButton id="plain">Plain</button>
     <button uiButton id="submit" type="submit">Submit</button>
     <button uiButton id="off" disabled>Off</button>
+    <button uiButton id="held" disabled focusableWhenDisabled>Held</button>
     <button uiButton id="save" #save="uiButton" (action)="run($event)">
       {{ save.state().pending ? "Saving" : "Save" }}
     </button>
@@ -43,6 +44,12 @@ describe("button", () => {
   test("disabled disables a native button", async () => {
     const { host } = await mount(Page)
     expect((el(host, "off") as HTMLButtonElement).disabled).toBe(true)
+  })
+
+  test("a bare disabled leaves a focusable disabled button in the tab order", async () => {
+    const { host } = await mount(Page)
+    expect(el(host, "held").hasAttribute("disabled")).toBe(false)
+    expect(el(host, "held").getAttribute("aria-disabled")).toBe("true")
   })
 
   test("(action) runs on a press, and waitUntil() keeps it pending", async () => {

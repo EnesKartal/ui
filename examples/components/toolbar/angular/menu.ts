@@ -1,7 +1,7 @@
 import { Component } from "@angular/core"
 import { LucideChevronDown } from "@lucide/angular"
 import { useLog } from "../../../shared/angular/log"
-import { Menu, MenuContent, MenuItem } from "@ui-sdk/angular/menu"
+import { Menu, MenuContent, MenuItem, MenuTrigger } from "@ui-sdk/angular/menu"
 import { Toolbar, ToolbarButton } from "@ui-sdk/angular/toolbar"
 
 @Component({
@@ -9,6 +9,7 @@ import { Toolbar, ToolbarButton } from "@ui-sdk/angular/toolbar"
     Menu,
     MenuContent,
     MenuItem,
+    MenuTrigger,
     Toolbar,
     ToolbarButton,
     LucideChevronDown,
@@ -16,11 +17,11 @@ import { Toolbar, ToolbarButton } from "@ui-sdk/angular/toolbar"
   template: `
     <div uiToolbar aria-label="Document">
       <button uiToolbarButton (click)="log('Saved')">Save</button>
-      <ng-container uiMenu (action)="log('Shared by ' + $event)">
-        <MenuTrigger uiToolbarButton>
+      <ng-container uiMenu (action)="log('Shared by ' + $event.value)">
+        <button uiMenuTrigger uiToolbarButton>
           Share
           <svg lucideChevronDown></svg>
-        </MenuTrigger>
+        </button>
         <div *uiMenuContent>
           <div uiMenuItem value="email">Email</div>
           <div uiMenuItem value="link">Copy Link</div>

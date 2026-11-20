@@ -2,7 +2,7 @@ import { Directive, inject, input, type InputSignal } from "@angular/core"
 import { toolbar, type ToolbarOptions } from "@ui-sdk/core/toolbar"
 import { optionalBoolean } from "./inputs"
 import { ToolbarGroupDisabled, ToolbarHandle } from "./toolbar-context"
-import { usePart, usePrimitive } from "./use-primitive"
+import { useId, usePart, usePrimitive } from "./use-primitive"
 
 /**
  * A row of controls with one tab stop and arrow keys between them. Toggles and toggle groups inside join it. Put `uiToolbarButton` on menu and select triggers, and `uiToolbarInput` on fields.
@@ -45,6 +45,7 @@ class Toolbar {
 @Directive({ selector: "[uiToolbarButton]", exportAs: "uiToolbarButton" })
 class ToolbarButton {
   readonly #group = inject(ToolbarGroup, { optional: true })
+  readonly #id = useId()
 
   /** Stops the item from being used. It stays focusable with `aria-disabled`, so arrow keys still reach it and a tooltip can say why. */
   readonly disabled = input(undefined, { transform: optionalBoolean })
@@ -55,6 +56,7 @@ class ToolbarButton {
 
   /** The part's state, as a signal. */
   readonly state = usePart(inject(Toolbar).handle, "button", () => ({
+    id: this.#id,
     disabled: this.disabled(),
     focusableWhenDisabled: this.focusableWhenDisabled(),
     groupDisabled: this.#group?.disabled(),
@@ -68,9 +70,11 @@ class ToolbarButton {
 @Directive({ selector: "[uiToolbarLink]", exportAs: "uiToolbarLink" })
 class ToolbarLink {
   readonly #group = inject(ToolbarGroup, { optional: true })
+  readonly #id = useId()
 
   /** The part's state, as a signal. */
   readonly state = usePart(inject(Toolbar).handle, "link", () => ({
+    id: this.#id,
     groupDisabled: this.#group?.disabled(),
   })).state
 }
@@ -82,6 +86,7 @@ class ToolbarLink {
 @Directive({ selector: "[uiToolbarInput]", exportAs: "uiToolbarInput" })
 class ToolbarInput {
   readonly #group = inject(ToolbarGroup, { optional: true })
+  readonly #id = useId()
 
   /** Stops the item from being used. It stays focusable with `aria-disabled`, so arrow keys still reach it and a tooltip can say why. */
   readonly disabled = input(undefined, { transform: optionalBoolean })
@@ -92,6 +97,7 @@ class ToolbarInput {
 
   /** The part's state, as a signal. */
   readonly state = usePart(inject(Toolbar).handle, "input", () => ({
+    id: this.#id,
     disabled: this.disabled(),
     focusableWhenDisabled: this.focusableWhenDisabled(),
     groupDisabled: this.#group?.disabled(),

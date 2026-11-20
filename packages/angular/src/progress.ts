@@ -1,6 +1,6 @@
 import { Directive, inject, input, type InputSignal } from "@angular/core"
 import { progress, type ProgressOptions } from "@ui-sdk/core/progress"
-import { optionalBoolean, optionalNumber } from "./inputs"
+import { nullableNumber, optionalBoolean, optionalNumber } from "./inputs"
 import { useText } from "./text"
 import { usePart, usePrimitive } from "./use-primitive"
 
@@ -24,7 +24,7 @@ class Progress {
   readonly getValueLabel: InputSignal<ProgressOptions["getValueLabel"]> =
     input()
   /** How far the task has come, between `min` and `max`. Null means it's under way but how far is unknown, and the bar is indeterminate. */
-  readonly value = input(undefined, { transform: optionalNumber })
+  readonly value = input(undefined, { transform: nullableNumber })
 
   readonly handle = usePrimitive(progress, () => ({
     debug: this.debug(),
