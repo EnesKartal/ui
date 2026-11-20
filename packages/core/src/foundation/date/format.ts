@@ -182,5 +182,6 @@ export {
   formatDateToParts,
   monthNames,
   todayDate,
+  utc,
   weekdayNames,
 }

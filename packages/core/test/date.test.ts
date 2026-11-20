@@ -434,6 +434,35 @@ describe("typing a date", () => {
     expect(parseDate("2026/10/16", "ja-JP-u-ca-japanese")).toBe("2026-10-16")
   })
 
+  test("reads years written with an era, and rejects dates outside it", () => {
+    expect(parseDate("R8/10/16", "ja-JP-u-ca-japanese")).toBe("2026-10-16")
+    expect(parseDate("令和8年10月16日", "ja-JP-u-ca-japanese")).toBe(
+      "2026-10-16"
+    )
+    expect(parseDate("平成31年4月30日", "ja-JP-u-ca-japanese")).toBe(
+      "2019-04-30"
+    )
+    expect(parseDate("平成31年5月1日", "ja-JP-u-ca-japanese")).toBeUndefined()
+    expect(parseDate("民國115/10/16", "zh-TW-u-ca-roc")).toBe("2026-10-16")
+    expect(parseDate("民國前1/1/1", "zh-TW-u-ca-roc")).toBeUndefined()
+    expect(parseDate("10/16/2569 BE", "en-US-u-ca-buddhist")).toBe("2026-10-16")
+    expect(parseDate("October 16, 2569 BE", "en-US-u-ca-buddhist")).toBe(
+      "2026-10-16"
+    )
+    expect(parseDate("5/1/115 جمهورية الصي", "ar-u-ca-roc")).toBe("2026-01-05")
+    expect(parseDate("05.01.15 Minguo", "de-u-ca-roc")).toBe("1926-01-05")
+  })
+
+  test("reads Roman numeral months in locales that write short dates with them", () => {
+    expect(parseDate("5/i/26", "haw", { referenceDate: "2026-01-01" })).toBe(
+      "2026-01-05"
+    )
+    expect(parseDate("16/x/2026", "haw")).toBe("2026-10-16")
+    expect(parseDate("5/xii", "haw", { referenceDate: "2026-01-01" })).toBe(
+      "2026-12-05"
+    )
+  })
+
   test("reads the locale's own digits", () => {
     expect(parseDate("١٦/١٠/٢٠٢٦", "ar-EG")).toBe("2026-10-16")
   })

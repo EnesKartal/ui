@@ -2,7 +2,7 @@
 // order, separators and month names all come from `Intl`, so "16.10.2026" is
 // October 16 in German, "10/16/2026" is in American English, and "16 oct 2026"
 // works in French and English alike.
-import { dateFormatter, monthNames, weekdayNames } from "./format"
+import { dateFormatter, monthNames, utc, weekdayNames } from "./format"
 import { dateParts, isoDate, type ISODate } from "./plain-date"
 
 /**
@@ -133,6 +133,7 @@ function parseDate(
     new Date().getFullYear()
 
   let namedMonth: number | undefined
+  let era: EraInfo | undefined
   let words = normalized.toLocaleLowerCase(locale)
   // Names with a space, apostrophe or number in them, like Irish "deireadh
   // fómhair" or Vietnamese "tháng 10", are found before the text splits.
@@ -140,6 +141,14 @@ function parseDate(
     const at = wordIndex(words, name)
     if (at >= 0) {
       namedMonth = month
+      words = `${words.slice(0, at)} ${words.slice(at + name.length)}`
+      break
+    }
+  }
+  for (const [name, info] of eras(locale).spaced) {
+    const at = wordIndex(words, name)
+    if (at >= 0) {
+      era = info
       words = `${words.slice(0, at)} ${words.slice(at + name.length)}`
       break
     }
@@ -153,8 +162,13 @@ function parseDate(
     const month = monthFromName(token, locale)
     if (month !== undefined && namedMonth === undefined) {
       namedMonth = month
-    } else if (!isPatternWord(token, locale)) {
-      return undefined
+    } else {
+      const foundEra = eras(locale).lookup.get(token)
+      if (foundEra !== undefined && era === undefined) {
+        era = foundEra
+      } else if (!isPatternWord(token, locale)) {
+        return undefined
+      }
     }
   }
 
@@ -174,7 +188,7 @@ function parseDate(
       order
         .filter((field) => field !== "month")
         .forEach((field, index) => (named[field] = numbers[index]))
-      const date = dateOf(named, locale, referenceYear)
+      const date = dateOf(named, locale, referenceYear, era)
       if (date) {
         return date
       }
@@ -207,14 +221,37 @@ function parseDate(
     return undefined
   }
 
-  return dateOf(values, locale, referenceYear)
+  return dateOf(values, locale, referenceYear, era)
 }
 
 function dateOf(
   values: Partial<Record<DateField, string>>,
   locale: string | undefined,
-  referenceYear: number
+  referenceYear: number,
+  era?: EraInfo
 ) {
+  if (era) {
+    if (values.year === undefined) {
+      return undefined
+    }
+    const year = Number(values.year) - era.offset
+    const date = isoDate(year, Number(values.month), Number(values.day))
+    if (!date) {
+      return undefined
+    }
+    // Reject dates that fall outside the era they were written in ("平成31年5月1日").
+    const actual = dateFormatter(locale, {
+      era: era.width,
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+    })
+      .formatToParts(utc(date))
+      .find((part) => part.type === "era")
+      ?.value.toLocaleLowerCase(locale)
+      .replace(/\.$/, "")
+    return actual === era.name ? date : undefined
+  }
   const offset = yearOffset(locale)
   const year =
     values.year === undefined
@@ -383,6 +420,81 @@ function monthLookup(locale: string | undefined) {
         .find((part) => part.type === "month")
       if (name) {
         add(name.value, index + 1)
+      }
+    }
+  }
+  // Short dates in locales like Hawaiian write the month as a Roman numeral ("i").
+  const inShort = dateFormatter(locale, { dateStyle: "short" })
+  for (let index = 0; index < 12; index++) {
+    const name = inShort
+      .formatToParts(Date.UTC(2026, index, 16))
+      .find((part) => part.type === "month")
+    if (name && /\p{L}/u.test(name.value)) {
+      add(name.value, index + 1)
+    }
+  }
+  return lookup
+}
+
+type EraWidth = "long" | "short" | "narrow"
+type EraInfo = { offset: number; width: EraWidth; name: string }
+
+const eraLookups = new Map<
+  string,
+  { lookup: Map<string, EraInfo>; spaced: [string, EraInfo][] }
+>()
+
+function eras(locale: string | undefined) {
+  const key = locale ?? ""
+  let found = eraLookups.get(key)
+  if (!found) {
+    const lookup = eraLookup(locale)
+    const spaced = [...lookup]
+      .filter(([name]) => /\p{L}/u.test(name) && /[^\p{L}\p{M}]/u.test(name))
+      .sort(([a], [b]) => b.length - a.length)
+    eraLookups.set(key, (found = { lookup, spaced }))
+  }
+  return found
+}
+
+function eraLookup(locale: string | undefined) {
+  const lookup = new Map<string, EraInfo>()
+  const calendar = dateFormatter(locale, numericDate).resolvedOptions().calendar
+  const years =
+    calendar === "japanese" ? [2026, 2000, 1950, 1920, 1900] : [2026]
+  for (const width of ["long", "short", "narrow"] as const) {
+    const formatter = dateFormatter(locale, {
+      era: width,
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+    })
+    for (const year of years) {
+      const parts = formatter.formatToParts(Date.UTC(year, 0, 1))
+      const era = parts.find((part) => part.type === "era")?.value
+      const eraYear = Number(
+        toLatinDigits(
+          parts.find((part) => part.type === "year")?.value ?? "",
+          locale
+        )
+      )
+      if (!era || !eraYear) {
+        continue
+      }
+      const next = formatter.formatToParts(Date.UTC(year + 1, 0, 1))
+      const nextEra = next.find((part) => part.type === "era")?.value
+      const nextYear = Number(
+        toLatinDigits(
+          next.find((part) => part.type === "year")?.value ?? "",
+          locale
+        )
+      )
+      if (nextEra === era && nextYear !== eraYear + 1) {
+        continue
+      }
+      const name = era.toLocaleLowerCase(locale).replace(/\.$/, "")
+      if (!lookup.has(name)) {
+        lookup.set(name, { offset: eraYear - year, width, name })
       }
     }
   }
