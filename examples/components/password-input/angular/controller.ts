@@ -22,10 +22,10 @@ import {
   template: `
     <div data-slot="stack">
       <div data-slot="controls">
-        <button type="button" (click)="onClick()">Suggest</button>
+        <button type="button" (click)="suggest()">Suggest</button>
         <button type="button" (click)="password.toggleVisible()">Toggle</button>
         <button type="button" (click)="password.clear()">Clear</button>
-        <button type="button" (click)="onClickAgain()">Read</button>
+        <button type="button" (click)="read()">Read</button>
         <button type="button" (click)="password.focus()">Focus</button>
       </div>
       <div uiField name="new-password">
@@ -57,12 +57,12 @@ class Example {
 
   readonly password = createPasswordInputController()
 
-  onClick() {
+  suggest() {
     this.password.setValue("plum-kettle-orbit-42")
     this.password.setVisible(true)
   }
 
-  onClickAgain() {
+  read() {
     this.log(
       `${this.password.getValue().length} characters, ${this.password.isVisible() ? "shown" : "hidden"}`
     )
