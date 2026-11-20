@@ -272,7 +272,7 @@ Connect external triggers and one menu to a `createMenuController<File>()`. Each
 
 ## Menus as Data
 
-`items` accepts `MenuData`: actions, groups, checkboxes, radio groups, and submenus. A string is shorthand for an item whose label and value match. Data menus register their shortcuts even while closed; set `itemShortcuts` to false to turn that off.
+`items` accepts `MenuData`: actions, groups, checkboxes, radio groups, and submenus. A string is shorthand for an item whose label and value match. Put `uiMenuItems` inside the content to render them as bare parts. Data menus register their shortcuts even while closed; set `itemShortcuts` to false to turn that off.
 
 The menu's `(checkedChange)` emits the checkbox's `value` and whether it's `checked`; its `(valueChange)` emits the radio group's name in `group` and its new `value`. Either change can be canceled with `$event.cancel()`. You can also render your own parts from the same data while `items` keeps the shortcuts registered. The [lists and menus guide](../lists-and-menus) covers the data shape.
 
@@ -282,16 +282,19 @@ import {
   Menu,
   MenuContent,
   type MenuData,
+  MenuItems,
   MenuTrigger,
 } from "@ui-sdk/angular/menu"
 
 @Component({
   selector: "app-example",
-  imports: [Menu, MenuContent, MenuTrigger],
+  imports: [Menu, MenuContent, MenuItems, MenuTrigger],
   template: `
     <ng-container uiMenu [items]="fileMenu" (action)="run($event.value)">
       <button uiMenuTrigger>File</button>
-      <div *uiMenuContent></div>
+      <div *uiMenuContent>
+        <div uiMenuItems></div>
+      </div>
     </ng-container>
   `,
 })

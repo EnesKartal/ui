@@ -276,7 +276,7 @@ Map an array into parts when you want to write the markup yourself. This example
   caption="Open the list to see three fruit groups. Type “an” to narrow them to Banana and Mango."
 />
 
-Pass `items` when the autocomplete needs the whole collection, such as server results or recent searches. It can render bare parts for you. To style changing results, render from the list’s `state().items`. [Lists and Menus](../lists-and-menus) covers the `ListData` format.
+Pass `items` when the autocomplete needs the whole collection, such as server results or recent searches. `uiAutocompleteItems` inside the list renders bare parts for you. To style changing results, render from the list’s `state().items`. [Lists and Menus](../lists-and-menus) covers the `ListData` format.
 
 Suggestions can change while the list is open. The highlight stays with its suggestion, and the typed text stays unchanged. Removing the highlighted suggestion clears the highlight.
 
@@ -516,7 +516,7 @@ Shows when no suggestion matches. Its content is yours, read from its `state()`.
 
 ### AutocompleteList
 
-Holds the suggestions. Renders the listbox, and renders `items` when you leave it empty.
+Holds the suggestions and gets the listbox role. Put `uiAutocompleteItems` inside it to render `items`.
 
 ### AutocompleteGroup
 

@@ -264,7 +264,7 @@ Show useful context beside a label, such as a username or role. Set `label` expl
 
 ## Items as Data
 
-Pass `items` when the combobox needs the whole collection, such as recent items, server results, or virtualization. It can render bare parts for you, or you can render the parts yourself from the list's `state().items`. Each item's `label` supplies the text for filtering and the input; `keywords` and `disabled` work the same as with items you render yourself. [Lists and Menus](../lists-and-menus) covers the `ListData` format.
+Pass `items` when the combobox needs the whole collection, such as recent items, server results, or virtualization. `uiComboboxItems` inside the list renders bare parts for you, or you can render the parts yourself from the list's `state().items`. Each item's `label` supplies the text for filtering and the input; `keywords` and `disabled` work the same as with items you render yourself. [Lists and Menus](../lists-and-menus) covers the `ListData` format.
 
 ```ts
 import { Component } from "@angular/core"

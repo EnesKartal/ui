@@ -190,7 +190,7 @@ Backspace in an empty search goes back and restores the previous page’s query.
 
 Pass `items` to provide commands, groups, separators, and pages as `CommandData`. A data command with its own `items` opens a page. Its shortcut still works when another page or filter hides it.
 
-The data can render bare parts for you. For styled commands, render from the list’s `state().items`, which follows the current page and ranked results. The example handles groups and separators as well as commands. [Lists and Menus](../lists-and-menus) covers the shared data format.
+`uiCommandItems` inside the list renders bare parts from the data. For styled commands, render from the list’s `state().items`, which follows the current page and ranked results. The example handles groups and separators as well as commands. [Lists and Menus](../lists-and-menus) covers the shared data format.
 
 Pass `emptyItems` alongside `items` to show suggested or recent commands while the first page's search is empty. Once someone types, the full collection is searched.
 

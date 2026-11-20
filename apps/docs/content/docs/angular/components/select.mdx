@@ -100,7 +100,7 @@ const plans: ListData = [
 ]
 ```
 
-The select can render bare items from this data. To style them, keep `items` on `uiSelect` and render `uiSelectItem` parts inside `uiSelectContent`, as the example does. Keeping the data on the root also makes labels available before the list opens, including during server rendering.
+Put `uiSelectItems` inside the content and the select renders bare items from this data. To style them, keep `items` on `uiSelect` and render `uiSelectItem` parts inside `uiSelectContent`, as the example does. Keeping the data on the root also makes labels available before the list opens, including during server rendering.
 
 <ComponentExample
   name="select/data"

@@ -237,7 +237,7 @@ class TokenInputTokenRemove {
 }
 
 /**
- * Renders each token's content from its template, inside the editor: `<span *uiTokenInputTokenDef="let token" uiTokenInputToken>{{ token.label }}</span>`. Without one, a token shows its label.
+ * The template for each token's content. Put it next to the editor, inside the token input: `<span *uiTokenInputTokenDef="let token" uiTokenInputToken>{{ token.label }}</span>`. Without one, a token shows its label.
  * @experimental
  */
 @Directive({ selector: "[uiTokenInputTokenDef]" })

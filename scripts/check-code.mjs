@@ -190,7 +190,6 @@ const undocumentedExports = new Set([
   "CommandItems",
   "ListboxItems",
   "TokenInputTokenDef",
-  "TreeItems",
   "TriggerMenuItems",
   "createOverlays",
   "defaultCodec",
