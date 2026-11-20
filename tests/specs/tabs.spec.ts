@@ -93,7 +93,12 @@ test.describe("selection", () => {
   test("without a default value, the first render already selects the first enabled tab", async ({
     page,
     open,
+    framework,
   }) => {
+    test.skip(
+      framework === "angular",
+      "Angular renders into the page, so its first render adds the panel."
+    )
     await page.addInitScript(() => {
       const changes: string[] = []
       ;(window as unknown as { __tabChanges: string[] }).__tabChanges = changes

@@ -2,7 +2,11 @@ import { applyFixtureOptions, loadScreenReader } from "tests/fixtures/page.ts"
 import { renderIndex } from "./index"
 
 // /?fixture=menu&framework=react loads src/fixtures/menu/react.tsx.
-const fixtures = import.meta.glob("./fixtures/*/*.{ts,tsx}")
+// The Angular fixtures wait for the Angular compiler to join the build.
+const fixtures = import.meta.glob([
+  "./fixtures/*/*.{ts,tsx}",
+  "!./fixtures/*/angular*.ts",
+])
 
 // Specs that check core's modules load them through the page, as the
 // instances the fixture uses, whether Vite serves the page or it's built. A
