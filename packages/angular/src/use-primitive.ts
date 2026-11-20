@@ -299,7 +299,13 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
   let fresh = false
   let shown = false
   let bound:
-    | { el: HTMLElement; part: unknown; joined: unknown; unbind: () => void }
+    | {
+        el: HTMLElement
+        part: unknown
+        joined: unknown
+        framed: boolean
+        unbind: () => void
+      }
     | undefined
   let moved: { el: HTMLElement; home: Comment } | undefined
   let frame: HTMLElement | undefined
@@ -343,6 +349,11 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
 
   // Presented as a sheet, a popup sits in a full-screen element, which goes
   // where the popup would have: into its container, or in place.
+  const isFramed = () => {
+    const wrapper = viewport?.()
+    return !!wrapper && isPresent(wrapper)
+  }
+
   const frameIn = (
     el: HTMLElement,
     target: Element | DocumentFragment | null
@@ -364,28 +375,32 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
     return frame
   }
 
+  const unbind = () => {
+    const current = bound
+    bound = undefined
+    current?.unbind()
+  }
+
   // A popup moves into its container once it's in the page, and goes back
   // before it stops being present, so Angular finds it where it rendered it.
   const move = (el: HTMLElement) => {
     const wanted = portal?.()
     const container = wanted === false ? null : portalTarget(wanted)
     const target = frameIn(el, container) ?? container
+    // A part binds again where it lands, as it does when another framework
+    // renders it there: an input takes focus back in a sheet's header.
     if (moved && (moved.el !== el || el.parentNode !== target)) {
+      unbind()
       goHome()
     }
     if (!target || el.parentNode === target) {
       return
     }
+    unbind()
     const home = el.ownerDocument.createComment("")
     el.before(home)
     target.append(el)
     moved = { el, home }
-  }
-
-  const unbind = () => {
-    const current = bound
-    bound = undefined
-    current?.unbind()
   }
 
   // Core writes the attributes and binds the element itself, so a state
@@ -438,14 +453,22 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
       }
     }
     shown = present
+    const framed = untracked(isFramed)
+    const reframed = !!bound && bound.framed !== framed
     if (
       bound &&
       (!present ||
         bound.el !== el ||
         bound.part !== current ||
-        bound.joined !== other)
+        bound.joined !== other ||
+        reframed)
     ) {
       unbind()
+    }
+    // An element kept in the page binds again inside its viewport, which is
+    // the popover now.
+    if (reframed) {
+      el.removeAttribute("popover")
     }
     if (!present) {
       goHome()
@@ -458,7 +481,13 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
         untracked(() => move(el))
       }
       if (!bound) {
-        const binding = { el, part: current, joined: other, unbind: () => {} }
+        const binding = {
+          el,
+          part: current,
+          joined: other,
+          framed,
+          unbind: () => {},
+        }
         bound = binding
         const unbindOwn = bind(current, el)
         const unbindOther = other && bind(other, el)
@@ -477,6 +506,16 @@ function bindPart<P extends Primitive, S extends SlotName<P>>(
     const current = untracked(part)
     // With no component yet, the element renders plain.
     const present = current ? isPresent(current) : true
+    // A popup that turns into a sheet while it's bound, like a select's list
+    // on its first touch, renders again, so nothing of the popover stays on it.
+    if (present && view && bound && bound.framed !== isFramed()) {
+      unbind()
+      head(undefined)
+      goHome()
+      container.clear()
+      view = undefined
+      shown = false
+    }
     if (present && !view) {
       view = container.createEmbeddedView(template, context)
       fresh = true
